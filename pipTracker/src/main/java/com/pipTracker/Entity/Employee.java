@@ -32,4 +32,7 @@ public class Employee {
     private String photoUrl;
     private LocalDate joiningDate;
     private String status;
+
+    private String id;
+
 }
