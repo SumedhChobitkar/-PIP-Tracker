@@ -1,4 +1,7 @@
 package com.pipTracker.Repository;
 
-public interface EmployeeRepository {
+import com.pipTracker.Entity.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 }
