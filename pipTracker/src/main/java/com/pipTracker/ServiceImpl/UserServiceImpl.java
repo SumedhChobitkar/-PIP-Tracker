@@ -8,6 +8,7 @@ import com.pipTracker.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,7 +22,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public User registerUser(User user) {
         try {
@@ -39,21 +41,42 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+//    @Override
+//    public User loginUser(String email,String password) {
+//        try {
+//            Optional<User>user=userRepository.findByEmail(email);
+//            if (user.isPresent()) {
+//                if (user.get().getPassword().equals(password)) {
+//                    return user.get();
+//                } else {
+//                    throw new RuntimeException("Invalid Password");
+//                }
+//            } else{
+//                throw new RuntimeException("User not found");
+//                }
+//        }catch (Exception e){
+//            logger.info("Error during login" + e.getMessage());
+//            throw e;
+//        }
+//    }
+
+
     @Override
-    public User loginUser(String email,String password) {
+    public User loginUser(String email, String password) {
         try {
-            Optional<User>user=userRepository.findByEmail(email);
+            Optional<User> user = userRepository.findByEmail(email);
             if (user.isPresent()) {
-                if (user.get().getPassword().equals(password)) {
+                // Use passwordEncoder.matches to compare raw password with encoded password
+                if (passwordEncoder.matches(password, user.get().getPassword())) {
                     return user.get();
                 } else {
                     throw new RuntimeException("Invalid Password");
                 }
-            } else{
+            } else {
                 throw new RuntimeException("User not found");
-                }
-        }catch (Exception e){
-            logger.info("Error during login" + e.getMessage());
+            }
+        } catch (Exception e) {
+            logger.info("Error during login: " + e.getMessage());
             throw e;
         }
     }

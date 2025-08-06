@@ -22,7 +22,8 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     private String department;
     private String designation;
     private String skills;
@@ -32,7 +33,7 @@ public class User {
     private String photoUrl;
     private LocalDate joiningDate;
     private String status;
-
+    private String Isregistered;
 
     @OneToOne
     @JoinColumn(name = "employee_id")
