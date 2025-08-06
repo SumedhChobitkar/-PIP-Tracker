@@ -1,9 +1,8 @@
 package com.pipTracker.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +32,9 @@ public class Employee {
     private LocalDate joiningDate;
     private String status;
 
-    private String id;
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("employee")
+    private User user;
 
 }
