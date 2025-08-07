@@ -48,7 +48,7 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Login Successful");
             response.put("token", token);
-            response.put("username", user.getName());
+           // response.put("username", user.getName());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (RuntimeException e) {
