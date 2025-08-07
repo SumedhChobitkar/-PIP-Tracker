@@ -1,6 +1,8 @@
 package com.pipTracker.ServiceImpl;
 
+import com.pipTracker.Entity.User;
 import com.pipTracker.Exception.EmployeeNotFoundException;
+import com.pipTracker.Repository.UserRepository;
 import com.pipTracker.Service.EmployeeService;
 import com.pipTracker.Entity.Employee;
 
@@ -16,6 +18,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public Employee saveEmployee(Employee employee) {
@@ -58,7 +63,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee existing = getEmployeeById(id);
             existing.setName(employee.getName());
             existing.setEmail(employee.getEmail());
-            existing.setPassword(employee.getPassword());
             existing.setRole(employee.getRole());
             existing.setDepartment(employee.getDepartment());
             existing.setDesignation(employee.getDesignation());
@@ -69,6 +73,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             existing.setPhotoUrl(employee.getPhotoUrl());
             existing.setJoiningDate(employee.getJoiningDate());
             existing.setStatus(employee.getStatus());
+
+            Optional<User> optionalUser = userRepository.findByEmployee(existing);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.setEmail(employee.getEmail());
+                userRepository.save(user);
+            }
 
             return employeeRepository.save(existing);
         } catch (Exception e) {

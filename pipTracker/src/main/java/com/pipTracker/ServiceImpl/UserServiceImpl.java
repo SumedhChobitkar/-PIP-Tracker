@@ -34,6 +34,16 @@ public class UserServiceImpl implements UserService {
             Long empId = user.getEmployee().getEmployeeId();
             Employee employee = employeeRepository.findById(empId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + empId));
+
+            if (!employee.getEmail().equals(user.getEmail())) {
+                throw new RuntimeException("User email and Employee email do not match");
+            }
+
+            if (!employee.getRole().equals(user.getRole())) {
+                throw new RuntimeException("User Role and Employee Role do not match");
+            }
+
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setEmployee(employee);
             return userRepository.save(user);
         } catch (Exception e) {
