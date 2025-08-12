@@ -30,7 +30,8 @@ public class Employee {
     private String skills;
     private String currentKRA;
     private String kpi;
-    private Long managerId;// we need to change after complitation of code
+    private Long managerId;// we need to change after completion of code
+    private Long hrId;
     private String photoUrl;
     private LocalDate joiningDate;
     private String status;

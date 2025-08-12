@@ -3,11 +3,21 @@ package com.pipTracker.Service;
 import com.pipTracker.Entity.Employee;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface EmployeeService {
-    Employee saveEmployee(Employee employee);
+    Employee saveEmployee(Employee employee,Long managerId);
+    Employee saveManager(Employee employee,Long hrId);
+    Employee saveHr(Employee employee);
     List<Employee> getAllEmployees();
     Employee getEmployeeById(Long id);
     Employee updateEmployee(Long id, Employee employee);
+    Optional<Employee> getEmployeeByName(String name);
+    List<Employee> getManagersUnderHR(Long hrId);
+    List<Employee> getEmployeesUnderManager(Long managerId);
+    List<Employee> getEmployeesByHrId(Long hrId);
+
+
     void deleteEmployee(Long id);
 }
