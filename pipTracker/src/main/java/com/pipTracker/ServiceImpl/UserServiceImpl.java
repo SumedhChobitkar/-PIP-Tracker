@@ -106,4 +106,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Optional<User> getUserByName(String name) {
+        try {
+            Optional<User> user = userRepository.findByName(name);
+            if (user.isPresent()) {
+                return user;
+            } else {
+                throw new RuntimeException("User not found with name: " + name);
+            }
+        } catch (Exception e) {
+            System.out.println("Error while fetching user by name: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -62,6 +63,17 @@ public class UserController {
         User user = userService.getUserByEmployeeId(employeeId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+    @GetMapping("/getEmployeeByName/{name}")
+    public ResponseEntity<?> getUserByName(@PathVariable String name) {
+        Optional<User> user = userService.getUserByName(name);
+        if (user.isPresent()) {
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
 }
