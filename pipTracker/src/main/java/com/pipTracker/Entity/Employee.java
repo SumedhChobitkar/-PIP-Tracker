@@ -44,4 +44,7 @@ public class Employee {
     @JsonManagedReference
     private List<FeedBack> feedback=new ArrayList<>();
 
+    @OneToMany(mappedBy = "employee",cascade=CascadeType.ALL )
+    @JsonManagedReference
+    private List<Pip> pip=new ArrayList<>();
 }
