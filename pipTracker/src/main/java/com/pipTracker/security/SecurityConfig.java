@@ -59,7 +59,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/feedback/getall").hasAnyRole("HR","MANAGER","ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}/{feedbackId}").hasAnyRole("HR","MANAGER")
-
+                        //pip related
+                        .requestMatchers(HttpMethod.POST,"/api/pip/save").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.PUT,"/api/pip/update/{id}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/pip/getById/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/pip/get").hasAnyRole("HR","MANAGER","ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/pip/delete/{id}").hasAnyRole("HR","MANAGER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
