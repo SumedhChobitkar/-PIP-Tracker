@@ -43,14 +43,16 @@ public class SecurityConfig {
 
                         ).permitAll()
                         //employee related
+                        .requestMatchers(HttpMethod.POST,  "/api/employees/addHr").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.POST,  "/api/employees/addManager/{hrId}").hasAnyRole("ADMIN", "HR","MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/employees/addEmployee/{managerId}").hasAnyRole("ADMIN", "HR","MANAGER")
-                        .requestMatchers(HttpMethod.POST,  "/api/employees/addHr").hasAnyRole("ADMIN", "HR")
-                        .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
                         .requestMatchers(HttpMethod.GET,"/api/employees/getAll").hasAnyRole("ADMIN","HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/employees/{id}").hasAnyRole("ADMIN","HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/employees/getEmployeeByName/{name}").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/employeesUnderHr/{hrId}").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/employeesUnderManager/{managerId}").hasAnyRole("ADMIN","HR","MANAGER")
-
+                        .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/employees/updateRole/{id}").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.DELETE, "/employees/{id}").hasAnyRole(" ADMIN","HR")
                         //feedback related
                         .requestMatchers(HttpMethod.POST,"/api/feedback/add/{employeeId}").hasAnyRole("HR","MANAGER")

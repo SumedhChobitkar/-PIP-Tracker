@@ -1,6 +1,7 @@
 package com.pipTracker.Controller;
 
 import com.pipTracker.Entity.Employee;
+import com.pipTracker.Entity.Role;
 import com.pipTracker.Service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,10 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping("/addEmployee/{managerId}")
-    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee,@PathVariable Long managerId) {
-        Employee saved = employeeService.saveEmployee(employee,managerId);
+
+    @PostMapping("/addHr")
+    public ResponseEntity<Employee> saveHr(@RequestBody Employee employees) {
+        Employee saved = employeeService.saveHr(employees);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
@@ -31,9 +33,9 @@ public class EmployeeController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    @PostMapping("/addHr")
-    public ResponseEntity<Employee> saveHr(@RequestBody Employee employees) {
-        Employee saved = employeeService.saveHr(employees);
+    @PostMapping("/addEmployee/{managerId}")
+    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee,@PathVariable Long managerId) {
+        Employee saved = employeeService.saveEmployee(employee,managerId);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
@@ -81,6 +83,13 @@ public class EmployeeController {
         Employee updated = employeeService.updateEmployee(id, employee);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
+
+    @PutMapping("/updateRole/{id}")
+    public ResponseEntity<Employee> updateRole(@PathVariable Long id, @RequestBody Employee newRole) {
+        Employee updated = employeeService.UpdateEmployeeRole(id,newRole);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
