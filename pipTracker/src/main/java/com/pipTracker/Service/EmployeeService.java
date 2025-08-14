@@ -1,6 +1,7 @@
 package com.pipTracker.Service;
 
 import com.pipTracker.Entity.Employee;
+import com.pipTracker.Entity.Role;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public interface EmployeeService {
     List<Employee> getManagersUnderHR(Long hrId);
     List<Employee> getEmployeesUnderManager(Long managerId);
     List<Employee> getEmployeesByHrId(Long hrId);
+    public Employee UpdateEmployeeRole(Long id, Employee newRole);
 
 
     void deleteEmployee(Long id);

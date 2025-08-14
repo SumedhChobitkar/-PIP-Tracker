@@ -185,6 +185,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+@Override
+public Employee UpdateEmployeeRole(Long id, Employee newRole){
+        try {
+            Employee employee= employeeRepository.findById(id)
+                    .orElseThrow(()-> new RuntimeException("Employee not found with Id" + id));
+            employee.setRole(newRole.getRole());
+            return employeeRepository.save(employee);
+        } catch (Exception e){
+            throw new RuntimeException("Error while updating employee role:" +e.getMessage());
+
+        }
+}
+
+
     @Override
     public void deleteEmployee(Long id) {
         try {
