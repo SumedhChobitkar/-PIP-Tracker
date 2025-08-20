@@ -54,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/updateRole/{id}").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.DELETE, "/employees/{id}").hasAnyRole(" ADMIN","HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/updatePassword/{employeeId}").hasRole("HR")
+
                         //feedback related
                         .requestMatchers(HttpMethod.POST,"/api/feedback/add/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.PUT,"/api/feedback/update/{employeeId}").hasAnyRole("HR","MANAGER")
