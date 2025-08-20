@@ -48,4 +48,8 @@ public class Employee {
     @OneToMany(mappedBy = "employee",cascade=CascadeType.ALL )
     @JsonManagedReference
     private List<Pip> pip=new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("employee")
+    private List<SkillGapAnalysis> skillGaps = new ArrayList<>();
 }
