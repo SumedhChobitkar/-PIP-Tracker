@@ -8,9 +8,11 @@ import com.pipTracker.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,8 +24,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Override
     public User registerUser(User user) {
         try {
@@ -120,6 +124,37 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
     }
+
+    @Override
+    public String updatePassword(Long employeeId, String newPassword) {
+        try {
+            User user = userRepository.findById(employeeId)
+                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + employeeId));
+            if (user.isRecentlyChangedPassword()) {
+
+                LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
+
+                if (user.getLastPasswordChangedAt() != null &&
+                        user.getLastPasswordChangedAt().isAfter(fiveDaysAgo)) {
+                    return " You cannot change password within 5 days!";
+                } else {
+                    user.setRecentlyChangedPassword(false);
+                }
+            }
+            if (passwordEncoder.matches(newPassword, user.getPassword())) {
+                return "New password cannot be the same as the old password!";
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setRecentlyChangedPassword(true);
+            user.setLastPasswordChangedAt(LocalDateTime.now());
+            userRepository.save(user);
+
+            return "Password updated successfully!";
+        } catch (Exception e) {
+            return " Error updating password: " + e.getMessage();
+        }
+    }
+
 
 
 }

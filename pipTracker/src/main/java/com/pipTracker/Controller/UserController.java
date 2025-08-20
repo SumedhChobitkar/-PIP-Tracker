@@ -49,6 +49,7 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Login Successful");
             response.put("token", token);
+            response.put("id",user.getEmployee().getEmployeeId());
            // response.put("username", user.getName());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -57,22 +58,44 @@ public class UserController {
         }
     }
 
-
     @GetMapping("/employeeId")
-    public ResponseEntity<User> getUserByEmployeeId(@RequestParam Long employeeId) {
-        User user = userService.getUserByEmployeeId(employeeId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> getUserByEmployeeId(@RequestParam Long employeeId) {
+        try {
+            User user = userService.getUserByEmployeeId(employeeId);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error while fetching user: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/getEmployeeByName/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
-        Optional<User> user = userService.getUserByName(name);
-        if (user.isPresent()) {
-            return new ResponseEntity<>(user.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        try {
+            Optional<User> user = userService.getUserByName(name);
+            if (user.isPresent()) {
+                return new ResponseEntity<>(user.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error while fetching user: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PutMapping("/updatePassword/{employeeId}")
+    public ResponseEntity<String> updatePassword(@PathVariable Long employeeId, @RequestParam String newPassword) {
+        try {
+            String result = userService.updatePassword(employeeId, newPassword);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.ok("Error while updating password: " + e.getMessage());
+        }
+    }
+
+
 
 
 

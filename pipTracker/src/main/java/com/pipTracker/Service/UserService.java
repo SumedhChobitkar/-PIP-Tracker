@@ -9,6 +9,6 @@ public interface UserService {
     User loginUser(String email,String password);
     User getUserByEmployeeId(Long employeeId);
     Optional<User> getUserByName(String name);
-
+    public String updatePassword(Long employeeId, String newPassword);
 
 }

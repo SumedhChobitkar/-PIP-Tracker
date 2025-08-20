@@ -22,78 +22,117 @@ public class EmployeeController {
 
 
     @PostMapping("/addHr")
-    public ResponseEntity<Employee> saveHr(@RequestBody Employee employees) {
-        Employee saved = employeeService.saveHr(employees);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<?> saveHr(@RequestBody Employee employees) {
+        try {
+            Employee saved = employeeService.saveHr(employees);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("HR creation failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/addManager/{hrId}")
-    public ResponseEntity<Employee> saveManager(@RequestBody Employee employees,@PathVariable Long hrId) {
-        Employee saved = employeeService.saveManager(employees,hrId);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<?> saveManager(@RequestBody Employee employees, @PathVariable Long hrId) {
+        try {
+            Employee saved = employeeService.saveManager(employees, hrId);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Manager creation failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/addEmployee/{managerId}")
-    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee,@PathVariable Long managerId) {
-        Employee saved = employeeService.saveEmployee(employee,managerId);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<?> saveEmployee(@RequestBody Employee employee, @PathVariable Long managerId) {
+        try {
+            Employee saved = employeeService.saveEmployee(employee, managerId);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Employee creation failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
-
     @GetMapping("/getAll")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> list = employeeService.getAllEmployees();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    public ResponseEntity<?> getAllEmployees() {
+        try {
+            List<Employee> list = employeeService.getAllEmployees();
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to fetch employees: " + e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
-
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Employee emp = employeeService.getEmployeeById(id);
-        return new ResponseEntity<>(emp, HttpStatus.OK);
+    public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
+        try {
+            Employee emp = employeeService.getEmployeeById(id);
+            return new ResponseEntity<>(emp, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Employee not found with ID: " + id, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/getEmployeeByName/{name}")
     public ResponseEntity<?> getEmployeeByName(@PathVariable String name) {
-        Optional<Employee> employee = employeeService.getEmployeeByName(name);
-        if (employee.isPresent()) {
-            return new ResponseEntity<>(employee.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
+        try {
+            Optional<Employee> employee = employeeService.getEmployeeByName(name);
+            if (employee.isPresent()) {
+                return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error while fetching employee: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/employeesUnderHr/{hrId}")
-    public ResponseEntity<List<Employee>> getManagersUnderHR(@PathVariable Long hrId) {
-        List<Employee> managers = employeeService.getManagersUnderHR(hrId);
-        return new ResponseEntity<>(managers, HttpStatus.OK);
-    }
-
-    @GetMapping("/employeesUnderManager/{managerId}")
-    public ResponseEntity<List<Employee>> getEmployeesUnderManager(@PathVariable Long managerId) {
+    public ResponseEntity<?> getManagersUnderHR(@PathVariable Long hrId) {
         try {
-            List<Employee> employees = employeeService.getEmployeesUnderManager(managerId);
-            return ResponseEntity.ok(employees);
+            List<Employee> managers = employeeService.getManagersUnderHR(hrId);
+            return new ResponseEntity<>(managers, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResponseEntity<>("HR not found with ID: " + hrId, HttpStatus.NOT_FOUND);
         }
     }
 
+    @GetMapping("/employeesUnderManager/{managerId}")
+    public ResponseEntity<?> getEmployeesUnderManager(@PathVariable Long managerId) {
+        try {
+            List<Employee> employees = employeeService.getEmployeesUnderManager(managerId);
+            return new ResponseEntity<>(employees, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Manager not found with ID: " + managerId, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        Employee updated = employeeService.updateEmployee(id, employee);
-        return new ResponseEntity<>(updated, HttpStatus.OK);
+    public ResponseEntity<?> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+        try {
+            Employee updated = employeeService.updateEmployee(id, employee);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Update failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/updateRole/{id}")
-    public ResponseEntity<Employee> updateRole(@PathVariable Long id, @RequestBody Employee newRole) {
-        Employee updated = employeeService.UpdateEmployeeRole(id,newRole);
-        return new ResponseEntity<>(updated, HttpStatus.OK);
+    public ResponseEntity<?> updateRole(@PathVariable Long id, @RequestBody Employee newRole) {
+        try {
+            Employee updated = employeeService.UpdateEmployeeRole(id, newRole);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Role update failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
-
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
-        return new ResponseEntity<>("Employee deleted successfully", HttpStatus.OK);
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        try {
+            employeeService.deleteEmployee(id);
+            return new ResponseEntity<>("Employee deleted successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Employee not found with ID: " + id, HttpStatus.NOT_FOUND);
+        }
     }
+
 }
