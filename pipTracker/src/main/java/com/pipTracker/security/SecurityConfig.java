@@ -69,6 +69,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/pip/getById/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/pip/get").hasAnyRole("HR","MANAGER","ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/pip/delete/{id}").hasAnyRole("HR","MANAGER")
+                        //Skillgaps Related
+                        .requestMatchers(HttpMethod.POST,"/api/skillgaps/add/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/get/{employeeId}").hasAnyRole("HR","MANAGER","EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/getSkillgapsByManagerId/{managerId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/getSkillgapsByHrId/{hrId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.PUT,"/api/skillgaps/update/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}/{analysisId}").hasRole("HR")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
