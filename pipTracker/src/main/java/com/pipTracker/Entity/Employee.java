@@ -1,9 +1,10 @@
 package com.pipTracker.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+@Table(name = "employee")
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "employeeId")
 public class Employee {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
@@ -41,15 +48,26 @@ public class Employee {
     @JsonIgnoreProperties("employee")
     private User user;
 
-    @OneToMany(mappedBy = "employee",cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<FeedBack> feedback=new ArrayList<>();
+    private List<FeedBack> feedback = new ArrayList<>();
 
-    @OneToMany(mappedBy = "employee",cascade=CascadeType.ALL )
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Pip> pip=new ArrayList<>();
+    private List<Pip> pip = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("employee")
     private List<SkillGapAnalysis> skillGaps = new ArrayList<>();
+
+    //One Employee Can Have Multiple Reviews
+    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<PerformanceReview> performanceReviews;
+
+    //One Employee Can Be reviewer for multiple reviews
+    @OneToMany(mappedBy = "reviewer",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<PerformanceReview> reviewsGiven;
+
 }
