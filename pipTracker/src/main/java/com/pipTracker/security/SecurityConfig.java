@@ -77,6 +77,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/skillgaps/update/{employeeId}").hasRole("HR")
                         .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}").hasRole("HR")
                         .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}/{analysisId}").hasRole("HR")
+                        //Performance Review Related
+                        .requestMatchers(HttpMethod.POST,"/api/performance-reviews/save").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.PUT,"/api/performance-reviews/update/{id}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/performance-reviews/delete/{id}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/getById/{id}").hasAnyRole("HR","MANAGER","EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/get").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/employee/{employeeId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/reviewer/{reviewerId}").hasAnyRole("HR","MANAGER")
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -104,7 +114,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/", config);
         return source;
-    }
+}
 }
