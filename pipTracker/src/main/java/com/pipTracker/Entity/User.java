@@ -38,6 +38,9 @@ public class User {
     private String status;
     private String Isregistered;
 
+    private LocalDateTime lastLoginTime;
+
+
     @OneToOne
     @JoinColumn(name = "employee_id")
     @JsonIgnoreProperties("user")
