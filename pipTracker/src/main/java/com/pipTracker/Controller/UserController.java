@@ -1,6 +1,7 @@
 package com.pipTracker.Controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Service.EmployeeService;
 import com.pipTracker.Service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +32,20 @@ public class UserController {
     private EmployeeService employeeService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        User savedUser = userService.registerUser(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    public ResponseEntity<?> register(
+            @RequestParam("userData") String userData,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            User user = mapper.readValue(userData, User.class);
+            User savedUser = userService.registerUser(user, file);
+
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
+
 
     //    @PostMapping("/login")
 //    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
@@ -94,6 +106,21 @@ public class UserController {
             return ResponseEntity.ok("Error while updating password: " + e.getMessage());
         }
     }
+
+
+    @PostMapping("/uploadPhoto/{employeeId}")
+    public ResponseEntity<?> uploadProfilePhoto(
+            @PathVariable Long employeeId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            User updatedUser = userService.uploadProfilePhoto(employeeId, file);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error while uploading photo: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 

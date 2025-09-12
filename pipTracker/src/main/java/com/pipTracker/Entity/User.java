@@ -33,10 +33,14 @@ public class User {
     private String currentKRA;
     private String kpi;
     private Long managerId;
-    private String photoUrl;
+
     private LocalDate joiningDate;
     private String status;
     private String Isregistered;
+    @Lob
+    private byte[] photoUrl;
+    private String fileType;
+
 
     private LocalDateTime lastLoginTime;
 

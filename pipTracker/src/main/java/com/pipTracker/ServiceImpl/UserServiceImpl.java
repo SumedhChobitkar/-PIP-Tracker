@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private EmailSenderService emailSenderService;
 
     @Override
-    public User registerUser(User user) {
+    public User registerUser(User user, MultipartFile file) {
         try {
             Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
             if (existingUser.isPresent()) {
@@ -42,7 +44,6 @@ public class UserServiceImpl implements UserService {
             Long empId = user.getEmployee().getEmployeeId();
             Employee employee = employeeRepository.findById(empId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + empId));
-
             if (!employee.getEmail().equals(user.getEmail())) {
                 throw new RuntimeException("User email and Employee email do not match");
             }
@@ -51,9 +52,23 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("User Role and Employee Role do not match");
             }
 
+
+            if (file != null && !file.isEmpty()) {
+                String contentType = file.getContentType();
+                if (contentType.equals("image/jpeg") ||
+                        contentType.equals("image/jpg") ||
+                        contentType.equals("image/png")) {
+                    user.setPhotoUrl(file.getBytes());  // store as byte[]
+                    user.setFileType(contentType);
+                } else {
+                    throw new RuntimeException("Invalid file format. Only JPEG, JPG, PNG allowed.");
+                }
+            }
+
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setEmployee(employee);
             return userRepository.save(user);
+
         } catch (Exception e) {
             throw new RuntimeException("Error while registering user: " + e.getMessage());
         }
@@ -173,6 +188,26 @@ public class UserServiceImpl implements UserService {
             return " Error updating password: " + e.getMessage();
         }
     }
+
+    @Override
+    public User uploadProfilePhoto(Long employeeId, MultipartFile file) {
+        try {
+            Employee employee = employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+
+            User user = userRepository.findByEmployee(employee)
+                    .orElseThrow(() -> new RuntimeException("User not found for Employee ID: " + employeeId));
+
+            user.setPhotoUrl(file.getBytes());
+            user.setFileType(file.getContentType());
+
+            return userRepository.save(user);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload photo: " + e.getMessage());
+        }
+    }
+
 
 
 
