@@ -1,12 +1,11 @@
 package com.pipTracker.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+
 
 @Data
 @Entity
@@ -30,6 +29,4 @@ public class FeedBack {
     @JoinColumn(name = "employee_id")
     @JsonBackReference
     private Employee employee;
-
-
 }

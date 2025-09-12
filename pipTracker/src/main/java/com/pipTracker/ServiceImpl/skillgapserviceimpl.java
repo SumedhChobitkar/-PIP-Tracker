@@ -1,16 +1,18 @@
 package com.pipTracker.ServiceImpl;
 
-import com.pipTracker.Entity.Employee;
-import com.pipTracker.Entity.SkillGapAnalysis;
+import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.SkillGapAnalysisNotfoundException;
+import com.pipTracker.Repository.AuditLogRepository;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.SkillGapAnalysisRepository;
+import com.pipTracker.Service.AuditLogService;
 import com.pipTracker.Service.SkillGapAnalysisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,13 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
     private EmployeeRepository employeeRepo;
 
     @Autowired
-    private static final Logger logger = LoggerFactory.getLogger(FeedBackServiceImpl.class);
+    private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private AuditLogService auditLogService;
+
+    @Autowired
+    private static final Logger logger = LoggerFactory.getLogger(skillgapserviceimpl.class);
 
     @Override
     public SkillGapAnalysis addSkillGap(Long employeeId, SkillGapAnalysis skillGap)
@@ -36,7 +44,17 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
                 Employee emp=option.get();
                 skillGap.setEmployee(emp);
                 skillGap.setGapLevel(skillGap.getRequiredLevel() - skillGap.getCurrentLevel());
-                return skillGapRepo.save(skillGap);
+                SkillGapAnalysis sg=skillGapRepo.save(skillGap);
+
+                AuditLog log=new AuditLog();
+                log.setUserId(employeeId);
+                log.setEntityId(sg.getAnalysisId());
+                log.setTimestamp(LocalDateTime.now());
+                log.setEntityname(EntityName.SKILLGAP);
+                log.setAction(Action.CREATE);
+                log.setRemarks("SkillGap Created");
+                auditLogService.createAuditLogSkillGap(log);
+                return sg;
             }
             else {
                 throw new SkillGapAnalysisNotfoundException("Employee Not Found with this EmployeeId:"+employeeId);
@@ -122,10 +140,21 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
             existing.setCurrentLevel(skillGap.getCurrentLevel());
             existing.setGapLevel(skillGap.getGapLevel());
             existing.setSuggestedTraining(skillGap.getSuggestedTraining());
-            return skillGapRepo.save(existing);
+            SkillGapAnalysis sg=skillGapRepo.save(existing);
 
+
+            AuditLog log = new AuditLog();
+            log.setUserId(employeeId);
+            log.setEntityname(EntityName.SKILLGAP);
+            log.setEntityId(skillGap.getAnalysisId());
+            log.setAction(Action.UPDATE);
+            log.setTimestamp(LocalDateTime.now());
+            log.setRemarks("SkillGap updated");
+            auditLogService.updateAuditlogSkillGap(log);
+
+            return sg;
         } catch (SkillGapAnalysisNotfoundException ex) {
-            logger.info("Feedback not found:"+ ex.getMessage());
+            logger.info("SkillGap not found:"+ ex.getMessage());
             throw ex;
         }
     }
@@ -157,6 +186,15 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
             {
                 SkillGapAnalysis s=option.get();
                 skillGapRepo.delete(s);
+
+                AuditLog log = new AuditLog();
+                log.setUserId(employeeId);
+                log.setEntityname(EntityName.SKILLGAP);
+                log.setEntityId(analysisId);
+                log.setAction(Action.DELETE);
+                log.setTimestamp(LocalDateTime.now());
+                log.setRemarks("SkillGap deleted");
+                auditLogService.createAuditLogSkillGap(log);
             }
             else {
                 throw new SkillGapAnalysisNotfoundException("analysis ID NOT FOUND:"+analysisId);

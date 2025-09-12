@@ -13,7 +13,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
-    private String createdBy;
+    private Long createdBy;
     @Enumerated(EnumType.STRING)
     private ReportType reportType; // e.g., PERFORMANCE, PIP, FEEDBACK
     private LocalDateTime generatedOn;
