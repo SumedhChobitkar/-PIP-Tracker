@@ -4,6 +4,7 @@ import com.pipTracker.Entity.Employee;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.UserRepository;
+import com.pipTracker.Service.EmailSenderService;
 import com.pipTracker.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Override
     public User registerUser(User user) {
@@ -82,6 +86,21 @@ public class UserServiceImpl implements UserService {
             if (user.isPresent()) {
                 // Use passwordEncoder.matches to compare raw password with encoded password
                 if (passwordEncoder.matches(password, user.get().getPassword())) {
+                    if(email!=null)
+                    {
+                        Optional<Employee> opt = employeeRepository.findByEmail(email);
+                        if(opt.isPresent()) {
+                            Employee emp=opt.get();
+                            String toEmail = email;
+                            String subject = "No Reply";
+                            String body = "Dear " + emp.getName()+ "," + "\n\nI hope this message finds you a well. " +
+                                    "\nYou have Logged in on "+LocalDateTime.now()+"."+ "\nIf you have any related queries feel free to reach out us." + "\n\n"
+                                    + "Best Regards," + "\n" +"HR Team."+"\n\n\nThis is auto-generated mail."
+                                    ;
+
+                            emailSenderService.sendEmail(toEmail, subject, body);
+                        }
+                    }
                     return user.get();
                 } else {
                     throw new RuntimeException("Invalid Password");

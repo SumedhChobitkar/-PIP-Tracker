@@ -1,15 +1,15 @@
 package com.pipTracker.ServiceImpl;
 
 
-import com.pipTracker.Entity.Employee;
-import com.pipTracker.Entity.Report;
-import com.pipTracker.Entity.User;
+import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Exception.ReportNotFoundException;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.ReportRepository;
+import com.pipTracker.Service.AuditLogService;
 import com.pipTracker.Service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +30,9 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     @Override
     public Report createReport(Report report, Long employeeId, MultipartFile file) {
         try {
@@ -38,6 +41,15 @@ public class ReportServiceImpl implements ReportService {
             report.setEmployee(employee);
 
             report.setGeneratedOn(LocalDateTime.now());
+
+            AuditLog log=new AuditLog();
+            log.setUserId(report.getCreatedBy());
+            log.setEntityId(report.getReportId());
+            log.setTimestamp(LocalDateTime.now());
+            log.setEntityname(EntityName.REPORT);
+            log.setAction(Action.CREATE);
+            log.setRemarks("Report Created");
+            auditLogService.createAuditLogFeedBack(log);
 
             if (file != null && !file.isEmpty()) {
                 String contentType = file.getContentType();
@@ -146,6 +158,15 @@ public class ReportServiceImpl implements ReportService {
             existing.setCreatedBy(updated.getCreatedBy());
             existing.setReportType(updated.getReportType());
 
+            AuditLog log = new AuditLog();
+            log.setUserId(updated.getCreatedBy());
+            log.setEntityname(EntityName.REPORT);
+            log.setEntityId(reportId);
+            log.setAction(Action.UPDATE);
+            log.setTimestamp(LocalDateTime.now());
+            log.setRemarks("Report updated");
+            auditLogService.updateAuditlogFeedBack(log);
+
             return reportRepository.save(existing);
         } catch (Exception e) {
             throw new RuntimeException("Error while updating report", e);
@@ -188,6 +209,14 @@ public class ReportServiceImpl implements ReportService {
         public boolean deleteReport(Long reportId) {
             try {
                 reportRepository.deleteById(reportId);
+                AuditLog log = new AuditLog();
+                log.setUserId(reportId);
+                log.setEntityname(EntityName.REPORT);
+                log.setEntityId(reportId);
+                log.setAction(Action.DELETE);
+                log.setTimestamp(LocalDateTime.now());
+                log.setRemarks("Report deleted");
+                auditLogService.createAuditLogFeedBack(log);
                 return true;
             } catch (Exception e) {
                 throw new RuntimeException("Error while deleting report", e);

@@ -1,11 +1,15 @@
 package com.pipTracker.ServiceImpl;
 
-import com.pipTracker.Entity.Employee;
-import com.pipTracker.Entity.FeedBack;
+import com.pipTracker.Entity.*;
+import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Exception.FeedBackNotFoundException;
+import com.pipTracker.Repository.AuditLogRepository;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.FeedBackRepository;
+import com.pipTracker.Service.AuditLogService;
+import com.pipTracker.Service.EmailSenderService;
 import com.pipTracker.Service.FeedBackService;
+import com.pipTracker.Service.Notificationservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,18 @@ public class FeedBackServiceImpl implements FeedBackService
 
     @Autowired
     private FeedBackRepository feedbackrepo;
+
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private AuditLogService auditLogService;
+
+    @Autowired
+    private Notificationservice notificationService;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Autowired
     private static final Logger logger = LoggerFactory.getLogger(FeedBackServiceImpl.class);
@@ -50,12 +66,52 @@ public class FeedBackServiceImpl implements FeedBackService
                 Employee employee = optional.get();
                 feedback.setEmployee(employee);
                 feedback.setCreatedDate(LocalDateTime.now());
-                return feedbackrepo.save(feedback);
+                feedback.setFromUserId(employeeId);
+                FeedBack fb=feedbackrepo.save(feedback);
+
+                AuditLog log=new AuditLog();
+                log.setUserId(employee.getEmployeeId());
+                log.setEntityId(fb.getFeedbackId());
+                log.setTimestamp(LocalDateTime.now());
+                log.setEntityname(EntityName.FEEDBACK);
+                log.setAction(Action.CREATE);
+                log.setRemarks("FeedBack Created");
+                auditLogService.createAuditLogFeedBack(log);
+
+                Notification notification = new Notification();
+                notification.setUserId(employee.getEmployeeId());
+                notification.setTitle("New Feedback Received");
+                notification.setMessage("You have received new feedback from user: " + fb.getFromUserId());
+                notification.setType("ALERT");
+                notification.setTimestamp(LocalDateTime.now());
+                notificationService.createNotification(notification);
+
+                if (fb.getToUserId() != null) {
+                    Optional<Employee> Opt = employeeRepository.findById(fb.getToUserId());
+                    if (Opt.isPresent()) {
+                        Employee toEmployee =Opt.get();
+                        Employee fromEmployee=optional.get();
+                        String toEmail = toEmployee.getEmail();
+                        String subject = "New Feedback Notification";
+                        String body = "Dear " + toEmployee.getName()+","+"\n\nI hope this message finds you a well. "+
+                                "\nYou have received new feedback from User ID: " + fb.getFromUserId()+".Please Check It."+"\nIf you have any related queries feel free to reach out us."+"\n\n"
+                                +"Best Regards,"+"\n"+"HR Team."+"\n\n\nThis is auto-generated mail.";
+
+                        emailSenderService.sendEmail(toEmail, subject, body);
+                    }
+                    else {
+                        throw new EmployeeNotFoundException("Id not found of user Id"+fb.getToUserId());
+                    }
+                }
+                else {
+                    throw new NullPointerException("Enter Valid Id");
+                }
+                return fb;
             } else {
                 throw new FeedBackNotFoundException("Employee not found with ID: " + employeeId);
             }
         }
-        catch(FeedBackNotFoundException e)
+        catch(Exception e)
         {
             logger.info("Error : " + e.getMessage());
             throw e;
@@ -127,7 +183,7 @@ public class FeedBackServiceImpl implements FeedBackService
                 throw new RuntimeException("Feedback does not belong to the specified employee");
             }
 
-            existing.setFromUserId(updatedFeedback.getFromUserId());
+            existing.setFromUserId(employeeId);
             existing.setToUserId(updatedFeedback.getToUserId());
             existing.setFeedbackType(updatedFeedback.getFeedbackType());
             existing.setComments(updatedFeedback.getComments());
@@ -135,7 +191,18 @@ public class FeedBackServiceImpl implements FeedBackService
             existing.setIsAnonymous(updatedFeedback.getIsAnonymous());
             existing.setCreatedDate(updatedFeedback.getCreatedDate());
 
-            return feedbackrepo.save(existing);
+            FeedBack saved=feedbackrepo.save(existing);
+
+            AuditLog log = new AuditLog();
+            log.setUserId(existing.getFromUserId());
+            log.setEntityname(EntityName.FEEDBACK);
+            log.setEntityId(updatedFeedback.getFeedbackId());
+            log.setAction(Action.UPDATE);
+            log.setTimestamp(LocalDateTime.now());
+            log.setRemarks("Feedback updated");
+            auditLogService.updateAuditlogFeedBack(log);
+
+            return saved;
 
         } catch (FeedBackNotFoundException ex) {
             logger.info("Feedback not found:"+ ex.getMessage());
@@ -166,6 +233,14 @@ public class FeedBackServiceImpl implements FeedBackService
             }
 
             feedbackrepo.delete(fb);
+            AuditLog log = new AuditLog();
+            log.setUserId(employeeId);
+            log.setEntityname(EntityName.FEEDBACK);
+            log.setEntityId(feedbackId);
+            log.setAction(Action.DELETE);
+            log.setTimestamp(LocalDateTime.now());
+            log.setRemarks("Feedback deleted");
+            auditLogService.createAuditLogFeedBack(log);
         }
         catch (FeedBackNotFoundException e)
         {

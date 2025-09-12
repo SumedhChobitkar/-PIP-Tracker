@@ -1,8 +1,6 @@
 package com.pipTracker.Service;
 
 import com.pipTracker.Entity.FeedBack;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -15,6 +13,6 @@ public interface FeedBackService
     FeedBack updateFeedbackByEmployeeId(Long employeeId, FeedBack feedback);
     void deleteFeedback(Long id);
     void deleteFeedbackByEmployeeId(Long employeeId, Long feedbackId);
-    FeedBack addFeedbackToEmployee(Long employeeId, FeedBack feedback);
+    Object addFeedbackToEmployee(Long employeeId, FeedBack feedback);
     void deleteAllFeedbackByEmployeeId(Long employeeId);
 }

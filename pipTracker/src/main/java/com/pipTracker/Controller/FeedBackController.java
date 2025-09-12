@@ -34,12 +34,16 @@ public class FeedBackController
     public ResponseEntity<?> addFeedbackToEmployee(@PathVariable Long employeeId, @RequestBody FeedBack feedback)
     {
         try {
-            FeedBack saved = feedbackservice.addFeedbackToEmployee(employeeId, feedback);
+            FeedBack saved = (FeedBack) feedbackservice.addFeedbackToEmployee(employeeId, feedback);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         }
         catch (FeedBackNotFoundException e)
         {
             return ResponseEntity.internalServerError().body("Data Adding Issue");
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.internalServerError().body("Id Not Found or enter Valid Id");
         }
     }
     @GetMapping("/getall")

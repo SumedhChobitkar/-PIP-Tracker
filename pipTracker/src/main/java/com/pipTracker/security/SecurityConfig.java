@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/employeesUnderManager/{managerId}").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/updateRole/{id}").hasAnyRole("ADMIN", "HR")
-                        .requestMatchers(HttpMethod.DELETE, "/employees/{id}").hasAnyRole(" ADMIN","HR")
+                        .requestMatchers(HttpMethod.DELETE, "/employees/{id}").hasAnyRole("ADMIN","HR")
                         .requestMatchers(HttpMethod.PUT, "/api/users/updatePassword/{employeeId}").hasRole("HR")
 
                         //feedback related
@@ -85,8 +85,31 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/get").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/employee/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/reviewer/{reviewerId}").hasAnyRole("HR","MANAGER")
-
-
+                        //AuditLog Related
+                        .requestMatchers(HttpMethod.GET,"/api/auditlog/get/for/all").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/auditlog/get/auditlog/by/entityid/{entityId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/auditlog/delete/by/logid/{logId}").hasAnyRole("HR","MANAGER")
+                        //AUDITLOG ARCHIEVE Related
+                        .requestMatchers(HttpMethod.GET,"/api/auditlogarchieve/get/by/logid/{logId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.PUT,"/api/auditlogarchieve/restore/by/logid/{logId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/auditlogarchieve/deleteall").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/auditlogarchieve/delete/by/id/{logId}").hasAnyRole("HR","MANAGER")
+                        //Notification Related
+                        .requestMatchers(HttpMethod.GET,"/api/notification/unread/{userId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.PUT,"/api/notification/{id}/read").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/notification/all/{userId}").hasAnyRole("HR","MANAGER")
+                        //Email Related
+                        .requestMatchers(HttpMethod.POST,"/api/mail/save").hasAnyRole("HR","MANAGER")
+                        //Report Related
+                        .requestMatchers(HttpMethod.POST, "/api/reports/create/**").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/{id}").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/employee/{employeeId}").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/getAll").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/get-image").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.PUT, "/api/reports/{id}").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/reports/update-image/{reportId}").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/reports/update-image/employee/{employeeId}").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reports/{id}").hasAnyRole("ADMIN", "HR")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

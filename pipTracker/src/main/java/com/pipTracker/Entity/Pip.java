@@ -1,9 +1,11 @@
 package com.pipTracker.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "pip")
@@ -47,5 +49,4 @@ public class Pip {
     @JoinColumn(name = "employeeId",nullable = false)
     @JsonBackReference
     private Employee employee;
-
 }
