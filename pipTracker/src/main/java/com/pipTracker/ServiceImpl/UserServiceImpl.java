@@ -9,6 +9,8 @@ import com.pipTracker.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailSenderService emailSenderService;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Override
     public User registerUser(User user, MultipartFile file) {
@@ -187,6 +194,57 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return " Error updating password: " + e.getMessage();
         }
+    }
+
+    @Override
+    public String forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        String otp = String.valueOf(100000 + new Random().nextInt(900000));
+        user.setOtp(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        userRepository.save(user);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Your OTP for Password Reset");
+        message.setText("Your OTP is: " + otp + "\nIt is valid for 5 minutes.");
+        mailSender.send(message);
+
+        return "OTP sent to your email!";
+    }
+
+    @Override
+    public boolean verifyOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        if (user.getOtp() != null && user.getOtp().equals(otp)
+                && user.getOtpExpiry().isAfter(LocalDateTime.now())) {
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
+    public String resetPassword(String email, String newPassword, String confirmPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("New password and confirm password do not match!");
+        }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+            userRepository.save(user);
+
+            return "Password updated successfully!";
+
+
     }
 
     @Override

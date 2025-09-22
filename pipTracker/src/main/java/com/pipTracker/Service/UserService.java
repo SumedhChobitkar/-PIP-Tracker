@@ -12,7 +12,9 @@ public interface UserService {
     Optional<User> getUserByName(String name);
     public String updatePassword(Long employeeId, String newPassword);
     User uploadProfilePhoto(Long employeeId, MultipartFile file);
-
+    String forgotPassword(String email);
+    boolean verifyOtp(String email, String otp);
+    String resetPassword(String email, String newPassword, String confirmPassword);
 
 
 }

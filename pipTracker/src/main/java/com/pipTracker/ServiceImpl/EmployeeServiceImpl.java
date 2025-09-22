@@ -1,5 +1,6 @@
 package com.pipTracker.ServiceImpl;
 
+import com.pipTracker.Entity.RegistrationStatus;
 import com.pipTracker.Entity.Role;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Exception.EmployeeNotFoundException;
@@ -197,6 +198,24 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
 
         }
 }
+
+    @Override
+    public Employee updateRegistrationStatus(Long employeeId, boolean status) {
+        try {
+            Employee emp = employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+
+            if (status) {
+                emp.setIsRegistered(RegistrationStatus.REGISTERED);
+            } else {
+                emp.setIsRegistered(RegistrationStatus.NOT_REGISTERED);
+            }
+
+            return employeeRepository.save(emp);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating registration status: " + e.getMessage());
+        }
+    }
 
 @Override
     public void deleteEmployee(Long id) {

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +31,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
+
     private String name;
     private String email;
     @Enumerated(EnumType.STRING)
@@ -39,9 +43,13 @@ public class Employee {
     private String kpi;
     private Long managerId;// we need to change after completion of code
     private Long hrId;
+    private Long adminId;
     private String photoUrl;
     private LocalDate joiningDate;
     private String status;
+
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus isRegistered;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
