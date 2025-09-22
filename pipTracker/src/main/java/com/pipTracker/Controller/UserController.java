@@ -107,6 +107,44 @@ public class UserController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        try {
+            String result = userService.forgotPassword(email);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        try {
+            boolean isValid = userService.verifyOtp(email, otp);
+            if (isValid) {
+                return ResponseEntity.ok("OTP verified! You can reset your password.");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid or expired OTP.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping ("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam String email,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword) {
+        try {
+            String result = userService.resetPassword(email, newPassword, confirmPassword);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+
 
     @PostMapping("/uploadPhoto/{employeeId}")
     public ResponseEntity<?> uploadProfilePhoto(
