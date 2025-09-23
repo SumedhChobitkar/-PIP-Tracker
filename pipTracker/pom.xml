@@ -56,12 +56,22 @@
 			<version>2.5.0</version>
 		</dependency>
 
+ p-004
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
+
+ Master
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>4.0.0-M2</version>
 		</dependency>
+ p-004
+
+
+
+
+
+ Master
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

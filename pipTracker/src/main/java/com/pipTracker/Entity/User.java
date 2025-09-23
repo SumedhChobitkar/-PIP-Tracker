@@ -41,6 +41,8 @@ public class User {
     private byte[] photoUrl;
     private String fileType;
 
+    private String otp;
+    private LocalDateTime otpExpiry;
 
     private LocalDateTime lastLoginTime;
 

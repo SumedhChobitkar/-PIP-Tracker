@@ -37,6 +37,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/login",
                                 "/api/users/register",
+                                "/api/users/forgot-password",
+                                "/api/users/verify-otp",
+                                "/api/users/reset-password",
                                 "/addEmployee/{id}",
                                 "/addManager/{hrId}"
 
@@ -49,15 +52,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/employees/getAll").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/employees/{id}").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/employees/getEmployeeByName/{name}").hasAnyRole("ADMIN","HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/employeesUnderHr/{hrId}").hasAnyRole("ADMIN","HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/employeesUnderHr/{hrId}").hasAnyRole("ADMIN","HR")
                         .requestMatchers(HttpMethod.GET,"/api/employeesUnderManager/{managerId}").hasAnyRole("ADMIN","HR","MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/updateRole/{id}").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.DELETE, "/employees/{id}").hasAnyRole("ADMIN","HR")
-                        .requestMatchers(HttpMethod.PUT, "/api/users/updatePassword/{employeeId}").hasRole("HR")
 
                         // User related
                         .requestMatchers(HttpMethod.POST, "/api/users/uploadPhoto/{employeeId}").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/updatePassword/{employeeId}").hasRole("HR")
+
 
                         //feedback related
                         .requestMatchers(HttpMethod.POST,"/api/feedback/add/{employeeId}").hasAnyRole("HR","MANAGER")

@@ -125,6 +125,14 @@ public class EmployeeController {
         }
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Employee> updateRegistrationStatus(
+            @PathVariable Long id,
+            @RequestParam boolean status) {
+        Employee updatedEmployee = employeeService.updateRegistrationStatus(id, status);
+        return ResponseEntity.ok(updatedEmployee);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         try {
