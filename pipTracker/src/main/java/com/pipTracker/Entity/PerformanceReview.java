@@ -3,6 +3,7 @@ package com.pipTracker.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 
 @Entity
@@ -18,21 +19,22 @@ public class PerformanceReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
 
+    // === Employee being reviewed ===
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    // === Reviewer (Manager/HR) ===
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private Employee reviewer;
 
     private String reviewPeriod;
-
     private LocalDate reviewDate;
 
     @Lob
     @Column(columnDefinition = "TEXT")
-    private String scores; // JSON string (e.g. {"communication":4,"teamwork":5,"technical":3})
+    private String scores; // JSON string
 
     private Double overallRating;
 
@@ -40,7 +42,13 @@ public class PerformanceReview {
     private String comments;
 
     @Enumerated(EnumType.STRING)
-    private ReviewType reviewType;
+    private ReviewType reviewType; // MONTHLY / QUARTERLY
 
-    private String pdfUrl;
+    // === File Upload ===
+    private String fileName;
+    private String fileType;
+
+    @Lob
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    private byte[] fileData;
 }
