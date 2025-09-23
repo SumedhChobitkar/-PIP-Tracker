@@ -13,6 +13,6 @@ public interface FeedBackService
     FeedBack updateFeedbackByEmployeeId(Long employeeId, FeedBack feedback);
     void deleteFeedback(Long id);
     void deleteFeedbackByEmployeeId(Long employeeId, Long feedbackId);
-    Object addFeedbackToEmployee(Long employeeId, FeedBack feedback);
+    FeedBack addFeedbackToEmployee(Long employeeId, FeedBack feedback);
     void deleteAllFeedbackByEmployeeId(Long employeeId);
 }

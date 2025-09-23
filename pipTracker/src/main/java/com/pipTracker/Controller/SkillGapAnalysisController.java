@@ -4,6 +4,10 @@ import com.pipTracker.Entity.SkillGapAnalysis;
 import com.pipTracker.Exception.FeedBackNotFoundException;
 import com.pipTracker.Exception.SkillGapAnalysisNotfoundException;
 import com.pipTracker.Service.SkillGapAnalysisService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +19,20 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/skillgaps")
+@Tag(name ="skill Gaps",description = "APIs for managing employee skill gap analysis")
 public class SkillGapAnalysisController {
 
     @Autowired
     private SkillGapAnalysisService skillGapService;
 
+
+    @Operation(summary = "Add Skill Gap",description = "Add a new skill gap for an employee.\n\n" +
+            "Eg: POST http://localhost:8080/api/skillgaps/add/{employeeId}"
+            )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201",description = "SkillGap Added successfully"),
+            @ApiResponse(responseCode = "400",description = "Employee ID not found")
+    })
     @PostMapping("/add/{employeeId}")
     public ResponseEntity<?> addSkillGap(@PathVariable Long employeeId, @RequestBody SkillGapAnalysis skillGap) {
         try {
@@ -32,6 +45,13 @@ public class SkillGapAnalysisController {
         }
     }
 
+
+    @Operation(summary = "Get Skill Gaps by Employee",description = "Fetch all skill gaps For a specific employee.\n\n" +
+            "Eg: GET http://localhost:8080/api/skillgaps/get/{employeeId}")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "Skill gaps fetched successfully"),
+            @ApiResponse(responseCode = "404",description = "Employee Not found")
+    })
     @GetMapping("/get/{employeeId}")//get all analysis with employeeId
     public ResponseEntity<?> getSkillGapsByEmployee(@PathVariable Long employeeId) {
         try {
@@ -50,6 +70,13 @@ public class SkillGapAnalysisController {
         }
     }
 
+    @Operation(summary = "Get Skill Gaps by Manager",description = "Fetch all skill gaps for employees under a manager.\n\n" +
+            "Eg:GET http://localhost:8080/api/skillgaps/getSkillgapsByManagerId{managerId}"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "Skill gaps fetched successfully"),
+            @ApiResponse(responseCode = "404",description = "No skill gaps found for given manager")
+    })
     @GetMapping("/getSkillgapsByManagerId/{managerId}")
     public ResponseEntity<?> getAllSkillGapsByManager(@PathVariable Long managerId)
     {
@@ -68,6 +95,13 @@ public class SkillGapAnalysisController {
         }
     }
 
+
+    @Operation(summary = "Get Skill Gaps by HR",description = "Fetch all skill gaps for employees under an HR.\n\n" +
+            "Eg: GET http://localhost:8080/api/skillgaps/getSkillgapsByHrId/{hrId}")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "skill gaps fetched successfully"),
+            @ApiResponse(responseCode = "404",description = "No skill gaps for given HR")
+    })
     @GetMapping("/getSkillgapsByHrId/{hrId}")
     public ResponseEntity<?> getAllSkillGapsByHR(@PathVariable Long hrId)
     {
@@ -86,6 +120,14 @@ public class SkillGapAnalysisController {
         }
     }
 
+
+    @Operation(summary = "Update Skill Gap",description = "Update an employee's skill gap analysis.\n\n" +
+            "Eg: PUT http://localhost:8080/api/skillgaps/update/{employeeId}"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "Skill gap updated successfully"),
+            @ApiResponse(responseCode = "404",description = "Skill gap not found")
+    })
     @PutMapping("/update/{employeeId}")            // We need to mention which Analysis id should update in Json request body
     public ResponseEntity<?> updateSkillGap(@PathVariable Long employeeId, @RequestBody SkillGapAnalysis skillGap) {
         try
@@ -99,6 +141,14 @@ public class SkillGapAnalysisController {
         }
     }
 
+
+    @Operation(summary = "Delete All Skill Gaps by employee",description = "Delete all skill gap analysis records for an employee.\n\n" +
+            "Eg: DELETE http://localhost:8080/api/skillgaps/delete/{employeeId}"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "All skill gaps deleted successfully"),
+            @ApiResponse(responseCode = "400",description = "Failed to delete skill gaps")
+    })
     @DeleteMapping("/delete/{employeeId}")//Delete all Analysis which is related to employee mention in URL
     public ResponseEntity<String> deleteAllSkillGapByEmployee(@PathVariable Long employeeId) {
         try {
@@ -109,6 +159,14 @@ public class SkillGapAnalysisController {
         }
     }
 
+
+    @Operation(summary = "Delete Specific Skill Gap",description = "Delete a specific skill gap by employee and analysis ID.\n\n" +
+            "Eg:DELETE http://localhost:8080/api/skillgaps/delete/{employeeId}/{analysis}"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "Skill gap deleted successfully"),
+            @ApiResponse(responseCode = "400",description = "Failed to delete skill gap")
+    })
     @DeleteMapping("/delete/{employeeId}/{analysisId}")//Delete specific Analysis which is related to employeeId mention in URL and AnalysisId
     public ResponseEntity<String> deleteSkillGapByEmployee(@PathVariable Long employeeId,@PathVariable Long analysisId) {
         try {
