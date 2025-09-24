@@ -95,10 +95,6 @@ public class NotificationServiceImpl implements Notificationservice {
     }
     public static void validationNotification(Notification notification)
     {
-        if(notification.getUserId()==null || !Validation.useridN_PATTERN.matcher(notification.getUserId().toString()).matches())
-        {
-            throw new IllegalArgumentException("Add only Valid id Number");
-        }
         if(notification.getTitle()==null || !Validation.title_PATTERN.matcher(notification.getTitle()).matches())
         {
             throw new IllegalArgumentException("Input Valid Title");

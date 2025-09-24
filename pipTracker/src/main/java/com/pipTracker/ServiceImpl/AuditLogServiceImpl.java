@@ -191,10 +191,6 @@ public class AuditLogServiceImpl implements AuditLogService
 
     public static void validationAuditLog(AuditLog auditLog)
     {
-        if(auditLog.getUserId()==null || !Validation.userid_PATTERN.matcher(auditLog.getUserId().toString()).matches())
-        {
-            throw new IllegalArgumentException("Pass only Valid ID Number");
-        }
         if(auditLog.getEntityname()==null || !Validation.entityname_PATTERN.matcher(String.valueOf(auditLog.getEntityname())).matches())
         {
             throw new IllegalArgumentException("Input Entities only which you have");
