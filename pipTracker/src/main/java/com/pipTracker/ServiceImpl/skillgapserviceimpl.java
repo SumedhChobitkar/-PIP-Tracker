@@ -7,6 +7,7 @@ import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.SkillGapAnalysisRepository;
 import com.pipTracker.Service.AuditLogService;
 import com.pipTracker.Service.SkillGapAnalysisService;
+import com.pipTracker.Validations.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,13 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
     public SkillGapAnalysis addSkillGap(Long employeeId, SkillGapAnalysis skillGap)
     {
         try{
+            validationskill(skillGap);
             Optional<Employee> option=employeeRepo.findById(employeeId);
             if (option.isPresent()) {
                 Employee emp=option.get();
                 skillGap.setEmployee(emp);
-                skillGap.setGapLevel(skillGap.getRequiredLevel() - skillGap.getCurrentLevel());
+                skillGap.setRequiredLevel(10-skillGap.getCurrentLevel());
+                skillGap.setGapLevel(10-skillGap.getRequiredLevel());
                 SkillGapAnalysis sg=skillGapRepo.save(skillGap);
 
                 AuditLog log=new AuditLog();
@@ -126,6 +129,7 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
     public SkillGapAnalysis updateSkillGap(Long employeeId, SkillGapAnalysis skillGap)
     {
         try {
+            validationskill(skillGap);
             Long skillId = skillGap.getAnalysisId();
             if (skillId == null) {
                 throw new IllegalArgumentException("Analysis ID is required in the request body");
@@ -136,9 +140,9 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
                 throw new RuntimeException("SkillGapAnalysis does not belong to the specified employee");
             }
             existing.setSkill(skillGap.getSkill());
-            existing.setRequiredLevel(skillGap.getRequiredLevel());
             existing.setCurrentLevel(skillGap.getCurrentLevel());
-            existing.setGapLevel(skillGap.getGapLevel());
+            skillGap.setRequiredLevel(10-skillGap.getCurrentLevel());
+            skillGap.setGapLevel(10-skillGap.getRequiredLevel());
             existing.setSuggestedTraining(skillGap.getSuggestedTraining());
             SkillGapAnalysis sg=skillGapRepo.save(existing);
 
@@ -207,6 +211,21 @@ public class skillgapserviceimpl implements SkillGapAnalysisService {
         }
     }
 
+    public static void validationskill(SkillGapAnalysis skillGap)
+    {
+        if(skillGap.getSkill()==null || !Validation.skill_PATTERN.matcher(skillGap.getSkill()).matches())
+        {
+            throw new IllegalArgumentException("Input Valid Data");
+        }
+        if(Validation.currentLevel_PATTERN.matcher(String.valueOf(skillGap.getCurrentLevel())).matches())
+        {
+            throw new IllegalArgumentException("Input only 1 to 10 values");
+        }
+        if(skillGap.getSuggestedTraining()==null || !Validation.training_PATTERN.matcher(skillGap.getSuggestedTraining()).matches())
+        {
+            throw new IllegalArgumentException("Input Valid Data");
+        }
+    }
 }
 
 

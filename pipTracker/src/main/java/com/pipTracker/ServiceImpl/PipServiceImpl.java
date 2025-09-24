@@ -137,7 +137,7 @@ public class PipServiceImpl implements PipService {
             notification.setUserId(pip.getEmployee().getEmployeeId());
             notification.setTitle("PIP Ended");
             notification.setMessage("PIP Ended");
-            notification.setType("ALERT");
+            notification.setType("INFO");
             notification.setTimestamp(LocalDateTime.now());
             notificationService.updatePip(notification);
 
