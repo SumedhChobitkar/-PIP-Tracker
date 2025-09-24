@@ -7,6 +7,7 @@ import com.pipTracker.Exception.AuditLogNotFoundException;
 import com.pipTracker.Repository.AuditLogArchieveRepository;
 import com.pipTracker.Repository.AuditLogRepository;
 import com.pipTracker.Service.AuditLogService;
+import com.pipTracker.Validations.Validation;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class AuditLogServiceImpl implements AuditLogService
     public AuditLog createAuditLogFeedBack(AuditLog log)
     {
         try {
+            validationAuditLog(log);
             return auditLogRepository.save(log);
         }
         catch (AuditLogNotFoundException e)
@@ -45,6 +47,7 @@ public class AuditLogServiceImpl implements AuditLogService
     public AuditLog createAuditLogSkillGap(AuditLog log)
     {
         try {
+            validationAuditLog(log);
             return auditLogRepository.save(log);
         }
         catch (AuditLogNotFoundException e)
@@ -56,6 +59,7 @@ public class AuditLogServiceImpl implements AuditLogService
     public AuditLog createAuditLogPip(AuditLog log)
     {
         try {
+            validationAuditLog(log);
             return auditLogRepository.save(log);
         }
         catch (AuditLogNotFoundException e)
@@ -69,6 +73,7 @@ public class AuditLogServiceImpl implements AuditLogService
     public AuditLog createAuditLogPerformanceReview(AuditLog log) {
 
         try {
+            validationAuditLog(log);
             return auditLogRepository.save(log);
         }
         catch (AuditLogNotFoundException e)
@@ -115,6 +120,7 @@ public class AuditLogServiceImpl implements AuditLogService
     @Override
     public AuditLog updateAuditlogSkillGap(AuditLog newlog) {
         try {
+            validationAuditLog(newlog);
             return auditLogRepository.save(newlog);
         }
         catch (AuditLogNotFoundException e)
@@ -126,6 +132,7 @@ public class AuditLogServiceImpl implements AuditLogService
     @Override
     public AuditLog updateAuditlogPip(AuditLog newlog) {
         try {
+            validationAuditLog(newlog);
             return auditLogRepository.save(newlog);
         }
         catch (AuditLogNotFoundException e)
@@ -138,6 +145,7 @@ public class AuditLogServiceImpl implements AuditLogService
     @Override
     public AuditLog updateAuditlogPerformanceReview(AuditLog newlog) {
         try {
+            validationAuditLog(newlog);
             return auditLogRepository.save(newlog);
         }
         catch (AuditLogNotFoundException e)
@@ -162,6 +170,7 @@ public class AuditLogServiceImpl implements AuditLogService
                 auditLogArchieve.setDeletedAt(LocalDateTime.now());
                 auditLogArchieve.setStatus(ArchiveStatus.DELETED);
 
+                AuditLogArchieveServiceImpl.validationAuditLogArchieve(auditLogArchieve);
                 auditLogArchieveRepository.save(auditLogArchieve);
                 auditLogRepository.deleteById(logId);
             }
@@ -177,6 +186,30 @@ public class AuditLogServiceImpl implements AuditLogService
         {
             logger.info("Error:"+e.getMessage());
             throw e;
+        }
+    }
+
+    public static void validationAuditLog(AuditLog auditLog)
+    {
+        if(auditLog.getUserId()==null || !Validation.userid_PATTERN.matcher(auditLog.getUserId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Pass only Valid ID Number");
+        }
+        if(auditLog.getEntityname()==null || !Validation.entityname_PATTERN.matcher(String.valueOf(auditLog.getEntityname())).matches())
+        {
+            throw new IllegalArgumentException("Input Entities only which you have");
+        }
+        if(auditLog.getEntityId()==null || !Validation.entityId_PATTERN.matcher(auditLog.getEntityId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Pass only Valid ID Number");
+        }
+        if(auditLog.getAction()==null || !Validation.action_PATTERN.matcher(String.valueOf(auditLog.getAction())).matches())
+        {
+            throw new IllegalArgumentException("You can add only Create,update and delete actions");
+        }
+        if(auditLog.getRemarks()==null || !Validation.remarks_PATTERN.matcher(auditLog.getRemarks().toString()).matches())
+        {
+            throw new IllegalArgumentException("Add Validate Remarks");
         }
     }
 }

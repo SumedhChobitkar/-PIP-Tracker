@@ -1,18 +1,17 @@
 package com.pipTracker.ServiceImpl;
 
-import com.pipTracker.Entity.AuditLog;
 import com.pipTracker.Entity.Notification;
 import com.pipTracker.Exception.AuditLogNotFoundException;
 import com.pipTracker.Exception.NotificationNotFoundException;
 import com.pipTracker.Repository.NotificationRepository;
 import com.pipTracker.Service.Notificationservice;
+import com.pipTracker.Validations.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NotificationServiceImpl implements Notificationservice {
@@ -24,6 +23,7 @@ public class NotificationServiceImpl implements Notificationservice {
     @Override
     public Notification createNotification(Notification notification) {
         try {
+            validationNotification(notification);
             System.out.println("Notification Sent Successfully");
             return notificationRepository.save(notification);
         }
@@ -91,6 +91,25 @@ public class NotificationServiceImpl implements Notificationservice {
         {
             logger.info("Error:"+e.getMessage());
             throw e;
+        }
+    }
+    public static void validationNotification(Notification notification)
+    {
+        if(notification.getUserId()==null || !Validation.useridN_PATTERN.matcher(notification.getUserId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Add only Valid id Number");
+        }
+        if(notification.getTitle()==null || !Validation.title_PATTERN.matcher(notification.getTitle()).matches())
+        {
+            throw new IllegalArgumentException("Input Valid Title");
+        }
+        if(notification.getMessage()==null || !Validation.message_PATTERN.matcher(notification.getMessage()).matches())
+        {
+            throw new IllegalArgumentException("Add message VAlid");
+        }
+        if(notification.getType()==null || !Validation.type_PATTERN.matcher(notification.getType()).matches())
+        {
+            throw new IllegalArgumentException("Add Valid Type");
         }
     }
 }

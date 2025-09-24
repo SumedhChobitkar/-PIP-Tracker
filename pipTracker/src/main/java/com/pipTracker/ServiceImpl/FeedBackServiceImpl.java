@@ -10,6 +10,7 @@ import com.pipTracker.Service.AuditLogService;
 import com.pipTracker.Service.EmailSenderService;
 import com.pipTracker.Service.FeedBackService;
 import com.pipTracker.Service.Notificationservice;
+import com.pipTracker.Validations.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ public class FeedBackServiceImpl implements FeedBackService
     public FeedBack addFeedbackToEmployee(Long employeeId, FeedBack feedback)
     {
         try {
+            validation(feedback);
             Optional<Employee> optional = employeeRepository.findById(employeeId);
 
             if (optional.isPresent()) {
@@ -134,6 +136,7 @@ public class FeedBackServiceImpl implements FeedBackService
     public FeedBack updateFeedback(Long id,FeedBack fb)
     {
         try {
+            validation(fb);
             Optional<FeedBack> upfb = feedbackrepo.findById(id);
             if (upfb.isPresent()) {
                 FeedBack f = upfb.get();
@@ -173,6 +176,7 @@ public class FeedBackServiceImpl implements FeedBackService
     @Override
     public FeedBack updateFeedbackByEmployeeId(Long employeeId, FeedBack updatedFeedback) {
         try {
+            validation(updatedFeedback);
             Long feedbackId = updatedFeedback.getFeedbackId();
             if (feedbackId == null) {
                 throw new IllegalArgumentException("Feedback ID is required in the request body");
@@ -189,7 +193,7 @@ public class FeedBackServiceImpl implements FeedBackService
             existing.setComments(updatedFeedback.getComments());
             existing.setRating(updatedFeedback.getRating());
             existing.setIsAnonymous(updatedFeedback.getIsAnonymous());
-            existing.setCreatedDate(updatedFeedback.getCreatedDate());
+            existing.setCreatedDate(LocalDateTime.now());
 
             FeedBack saved=feedbackrepo.save(existing);
 
@@ -264,6 +268,30 @@ public class FeedBackServiceImpl implements FeedBackService
         {
             logger.info("Error : " + e.getMessage());
             throw e;
+        }
+    }
+
+    public static void validation(FeedBack feedBack)
+    {
+        if(feedBack.getToUserId()==null || !Validation.toUserId_PATTERN.matcher(feedBack.getToUserId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Here input only Numbers Id");
+        }
+        if(feedBack.getFeedbackType()==null || !Validation.feedBackType_PATTERN.matcher(feedBack.getFeedbackType().toString()).matches())
+        {
+            throw new IllegalArgumentException("Input only SELF or MANAGER");
+        }
+        if(feedBack.getComments()==null || !Validation.comments_PATTERN.matcher(feedBack.getComments()).matches())
+        {
+            throw new IllegalArgumentException("Add Correct way to Comments");
+        }
+        if (!Validation.rating_PATTERN.matcher(String.valueOf(feedBack.getRating())).matches())
+        {
+            throw new IllegalArgumentException("Here input only Numbers from 1 to 5");
+        }
+        if(feedBack.getIsAnonymous()==null || !Validation.isAnonoymous_PATTERN.matcher(feedBack.getIsAnonymous().toString()).matches())
+        {
+            throw new IllegalArgumentException("Input only TRUE or FALSE");
         }
     }
 }

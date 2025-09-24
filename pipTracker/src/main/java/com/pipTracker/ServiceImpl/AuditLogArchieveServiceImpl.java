@@ -7,6 +7,7 @@ import com.pipTracker.Exception.AuditLogArchieveNotFoundException;
 import com.pipTracker.Repository.AuditLogArchieveRepository;
 import com.pipTracker.Repository.AuditLogRepository;
 import com.pipTracker.Service.AuditLogArchieveService;
+import com.pipTracker.Validations.Validation;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ public class AuditLogArchieveServiceImpl implements AuditLogArchieveService
             log.setLogId(null);
             BeanUtils.copyProperties(archive, log,"logId");
 
+            validationAuditLogArchieve(archive);
             auditLogRepository.save(log);
 
             archive.setStatus(ArchiveStatus.RESTORED);
@@ -106,6 +108,33 @@ public class AuditLogArchieveServiceImpl implements AuditLogArchieveService
         } catch (Exception e) {
             logger.info("ERROR:"+e.getMessage());
             throw e;
+        }
+    }
+    public static void validationAuditLogArchieve(AuditLogArchieve auditLogArchieve)
+    {
+        if(auditLogArchieve.getUserId()==null || !Validation.userid_PATTERN.matcher(auditLogArchieve.getUserId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Pass only Valid ID Number");
+        }
+        if(auditLogArchieve.getEntityname()==null || !Validation.entityname_PATTERN.matcher(String.valueOf(auditLogArchieve.getEntityname())).matches())
+        {
+            throw new IllegalArgumentException("Input Entities only which you have");
+        }
+        if(auditLogArchieve.getEntityId()==null || !Validation.entityId_PATTERN.matcher(auditLogArchieve.getEntityId().toString()).matches())
+        {
+            throw new IllegalArgumentException("Pass only Valid ID Number");
+        }
+        if(auditLogArchieve.getAction()==null || !Validation.action_PATTERN.matcher(String.valueOf(auditLogArchieve.getAction())).matches())
+        {
+            throw new IllegalArgumentException("You can add only Create,update and delete actions");
+        }
+        if(auditLogArchieve.getRemarks()==null || !Validation.remarks_PATTERN.matcher(auditLogArchieve.getRemarks().toString()).matches())
+        {
+            throw new IllegalArgumentException("Add Validate Remarks");
+        }
+        if(auditLogArchieve.getStatus()==null || !Validation.archieveStatus_PATTERN.matcher(String.valueOf(auditLogArchieve.getStatus())).matches())
+        {
+            throw new IllegalArgumentException("Add Valid Status");
         }
     }
 }
