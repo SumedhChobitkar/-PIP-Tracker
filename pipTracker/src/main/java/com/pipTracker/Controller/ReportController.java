@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/reports")
 @Tag(name = "Report API", description = "CRUD operations for reports")
 
