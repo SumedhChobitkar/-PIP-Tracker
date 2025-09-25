@@ -112,10 +112,6 @@ public class AuditLogArchieveServiceImpl implements AuditLogArchieveService
     }
     public static void validationAuditLogArchieve(AuditLogArchieve auditLogArchieve)
     {
-        if(auditLogArchieve.getUserId()==null || !Validation.userid_PATTERN.matcher(auditLogArchieve.getUserId().toString()).matches())
-        {
-            throw new IllegalArgumentException("Pass only Valid ID Number");
-        }
         if(auditLogArchieve.getEntityname()==null || !Validation.entityname_PATTERN.matcher(String.valueOf(auditLogArchieve.getEntityname())).matches())
         {
             throw new IllegalArgumentException("Input Entities only which you have");

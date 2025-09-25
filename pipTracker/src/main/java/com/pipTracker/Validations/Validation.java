@@ -24,9 +24,8 @@ public class Validation {
     public static final Pattern archieveStatus_PATTERN=Pattern.compile("^(DELETED|RESTORED)$");
 
     //Notification
-    public static final Pattern useridN_PATTERN=Pattern.compile("^[0-9]+$]");
     public static final Pattern title_PATTERN=Pattern.compile("^[a-zA-Z0-9 ,.'@\\-()?!]*$");
-    public static final Pattern message_PATTERN=Pattern.compile("^[a-zA-Z0-9 ,.'@\\-()?!]*$");
+    public static final Pattern message_PATTERN=Pattern.compile("^[a-zA-Z0-9 ,.:;'@\\-()?!]*$");
     public static final Pattern type_PATTERN=Pattern.compile("^(REMINDER|ALERT|INFO)$");
 
 }
