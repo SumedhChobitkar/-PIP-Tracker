@@ -1,6 +1,7 @@
 package com.pipTracker.ServiceImpl;
 
 
+import com.pipTracker.CommonUtil.ValidationClass;
 import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Exception.ReportNotFoundException;
@@ -9,15 +10,10 @@ import com.pipTracker.Repository.ReportRepository;
 import com.pipTracker.Service.AuditLogService;
 import com.pipTracker.Service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,6 +32,8 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Report createReport(Report report, Long employeeId, MultipartFile file) {
         try {
+            validateReport(report);
+            reportRepository.save(report);
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
             report.setEmployee(employee);
@@ -223,8 +221,30 @@ public class ReportServiceImpl implements ReportService {
             }
         }
 
+    private void validateReport(Report report) {
 
+        if (report.getCreatedBy() == null || !ValidationClass.ID_PATTERN.matcher(report.getCreatedBy().toString()).matches()) {
+            throw new IllegalArgumentException("Invalid createdBy ID");
+        }
+
+        if (report.getEmployee() == null || report.getEmployee().getEmployeeId() == null ||
+                !ValidationClass.ID_PATTERN.matcher(report.getEmployee().getEmployeeId().toString()).matches()) {
+            throw new IllegalArgumentException("Invalid employee ID");
+        }
+
+        if (report.getFileType() != null &&
+                !ValidationClass.FILE_TYPE_PATTERN.matcher(report.getFileType()).matches()) {
+            throw new IllegalArgumentException("Invalid file type");
+        }
+
+        if (report.getGeneratedOn() == null) {
+            throw new IllegalArgumentException("generatedOn cannot be null");
+        }
     }
+
+
+
+}
 
 
 
