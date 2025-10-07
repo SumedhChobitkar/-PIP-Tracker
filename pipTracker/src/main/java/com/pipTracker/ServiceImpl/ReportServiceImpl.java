@@ -30,6 +30,7 @@ public class ReportServiceImpl implements ReportService {
     private AuditLogService auditLogService;
 
     @Override
+
     public Report createReport(Report report, Long employeeId, MultipartFile file) {
         try {
             validateReport(report);
@@ -68,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
             throw new RuntimeException("Error creating report: " + e.getMessage());
         }
     }
+
 
     private boolean isValidImageType(String contentType) {
         return contentType.equals("image/jpeg")||
@@ -215,6 +217,9 @@ public class ReportServiceImpl implements ReportService {
                 log.setTimestamp(LocalDateTime.now());
                 log.setRemarks("Report deleted");
                 auditLogService.createAuditLogFeedBack(log);
+
+
+
                 return true;
             } catch (Exception e) {
                 throw new RuntimeException("Error while deleting report", e);
