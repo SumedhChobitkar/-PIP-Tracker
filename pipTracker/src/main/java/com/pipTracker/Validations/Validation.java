@@ -2,12 +2,12 @@ package com.pipTracker.Validations;
 
 import java.util.regex.Pattern;
 
-public class Validation {
+public class Validation{
 
 
     //Numeric IDs(only positive numbers allowed)
     public static final Pattern REVIEWER_ID_PATTERN =
-    Pattern.compile("^[1-9][0-9]*$");
+            Pattern.compile("^[1-9][0-9]*$");
 
 
     //status (Enum values:ACTIVE,COMPLETED,FAILED)
@@ -39,7 +39,7 @@ public class Validation {
     public static final Pattern DATE_PATTERN =
             Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
-}
+
 
 
     //FeedBack
@@ -67,4 +67,6 @@ public class Validation {
     public static final Pattern type_PATTERN=Pattern.compile("^(REMINDER|ALERT|INFO)$");
 
 }
+
+
 

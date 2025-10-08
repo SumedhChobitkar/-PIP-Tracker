@@ -248,11 +248,11 @@ public class UserServiceImpl implements UserService {
         user.setOtpExpiry(null);
         userRepository.save(user);
 
-            user.setPassword(passwordEncoder.encode(newPassword));
-            user.setOtp(null);
-            user.setOtpExpiry(null);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtp(null);
+        user.setOtpExpiry(null);
         ValidUserPassword(newPassword);
-            userRepository.save(user);
+        userRepository.save(user);
 
 
         return "Password updated successfully!";
@@ -330,7 +330,7 @@ public class UserServiceImpl implements UserService {
 
         return user.getPhotoUrl();
     }
-}
+
 
     private void validateUser(User user) {
 
@@ -370,7 +370,6 @@ public class UserServiceImpl implements UserService {
         }
 
 
-
         if (user.getFileType() != null &&
                 !ValidationClass.FILE_TYPE_PATTERN.matcher(user.getFileType()).matches()) {
             throw new IllegalArgumentException("Invalid photo file type");
@@ -383,6 +382,7 @@ public class UserServiceImpl implements UserService {
 
 
     }
+
     private void ValidUserPassword(String Password) {
 
         if (Password == null ||
@@ -391,9 +391,4 @@ public class UserServiceImpl implements UserService {
         }
 
     }
-
-
-
-
-
-} 
+}
