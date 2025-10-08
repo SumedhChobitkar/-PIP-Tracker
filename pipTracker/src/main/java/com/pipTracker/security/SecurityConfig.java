@@ -36,12 +36,21 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
 
-                        //Swagger Endpoints
+                        // Swagger URLs (new custom + default paths)
                         .requestMatchers(
                                 "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/swagger-config",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/webjars/**",
+                                "/swagger-resource/**",
+                                "/v3/portal/ess/home" // allow the custom path too:-
+
                         ).permitAll()
+
+                        // Allowing for Hello Pip Tracker APIs:-
+                        .requestMatchers("/api/hello").permitAll()
 
 
                         .requestMatchers(
@@ -70,6 +79,8 @@ public class SecurityConfig {
 
                         // User related
                         .requestMatchers(HttpMethod.POST, "/api/users/uploadPhoto/{employeeId}").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/users/getPhoto/{employeeId}")
+                        .permitAll()  // Anyone can see profile photo
                         .requestMatchers(HttpMethod.PUT, "/api/users/updatePassword/{employeeId}").hasRole("HR")
 
 
@@ -102,6 +113,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/get").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/employee/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/performance-reviews/reviewer/{reviewerId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/performance-reviews/{id}/upload").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/performance-reviews/{id}/download").hasAnyRole("HR", "MANAGER", "EMPLOYEE")
                         //AuditLog Related
                         .requestMatchers(HttpMethod.GET,"/api/auditlog/get/for/all").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/auditlog/get/auditlog/by/entityid/{entityId}").hasAnyRole("HR","MANAGER")
@@ -123,6 +136,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reports/employee/{employeeId}").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/reports/getAll").hasAnyRole("ADMIN", "HR", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/reports/get-image").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/image/**").permitAll() // Publicly accessible
                         .requestMatchers(HttpMethod.PUT, "/api/reports/{id}").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.PUT, "/api/reports/update-image/{reportId}").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.PUT, "/api/reports/update-image/employee/{employeeId}").hasAnyRole("ADMIN", "HR")
@@ -154,7 +168,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
 }
 }
