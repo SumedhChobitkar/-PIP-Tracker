@@ -1,4 +1,4 @@
-package com.pipTracker.Entity;
+/*package com.pipTracker.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,4 +24,50 @@ public class Report {
     @Lob
     private byte[] file;
     private  String fileType;
+    private String fileName;
+
+    private Long fileSize;
+
+    @Transient // not stored in DB
+    private String imageUrl; // generated dynamically in controller/service
 }
+*/
+package com.pipTracker.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "reports")
+@Data
+public class Report {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reportId;
+
+    private Long createdBy;
+
+    @Enumerated(EnumType.STRING)
+    private ReportType reportType;
+
+    private LocalDateTime generatedOn;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
+    // Image/File fields
+    @Lob
+    @JsonIgnore
+    private byte[] fileData;
+
+    private String fileType;
+    private Long fileSize;
+
+    // For easier access from frontend or Swagger
+    private String photoUrl;
+}
+
