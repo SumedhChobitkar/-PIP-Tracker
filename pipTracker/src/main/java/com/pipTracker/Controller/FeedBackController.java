@@ -56,7 +56,12 @@ public class FeedBackController {
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (FeedBackNotFoundException e) {
             return ResponseEntity.internalServerError().body("Data Adding Issue");
-        } catch (Exception e) {
+        }
+        catch (IllegalArgumentException e)
+        {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validations Issues"+e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body("Id Not Found or enter Valid Id");
         }
     }
@@ -123,8 +128,11 @@ public class FeedBackController {
         try {
             FeedBack updated = feedbackservice.updateFeedbackByEmployeeId(employeeId, feedback);
             return ResponseEntity.ok(updated);
-        } catch (FeedBackNotFoundException e) {
+        } catch (FeedBackNotFoundException e)
+        {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback not found with ID: " + employeeId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

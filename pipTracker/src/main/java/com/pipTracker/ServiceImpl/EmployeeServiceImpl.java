@@ -1,7 +1,7 @@
 package com.pipTracker.ServiceImpl;
 
+import com.pipTracker.CommonUtil.ValidationClass;
 import com.pipTracker.Entity.RegistrationStatus;
-import com.pipTracker.Entity.Role;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Repository.UserRepository;
@@ -9,12 +9,12 @@ import com.pipTracker.Service.EmployeeService;
 import com.pipTracker.Entity.Employee;
 
 import com.pipTracker.Repository.EmployeeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,24 +26,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+
+
     @Override
-    public Employee saveEmployee(Employee employee,Long managerId) {
+    public Employee saveEmployee(Employee employee, Long managerId) {
         try {
+            validateEmployee(employee);
             employee.setManagerId(managerId);
             return employeeRepository.save(employee);
         } catch (Exception e) {
-            System.out.println("Error saving employee: " + e.getMessage());
+            logger.error("Error saving employee: {}", e.getMessage(), e);
             throw e;
         }
     }
 
+
     @Override
     public Employee saveManager(Employee employees,Long hrId) {
         try {
+            validateEmployee(employees);
             employees.setHrId(hrId);
             return employeeRepository.save(employees);
         } catch (Exception e) {
-            System.out.println("Error saving employee: " + e.getMessage());
+            logger.error("Error saving employee: {} " , e.getMessage());
             throw e;
         }
     }
@@ -51,9 +57,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee saveHr(Employee employees) {
         try {
+            validateEmployee(employees);
             return employeeRepository.save(employees);
         } catch (Exception e) {
-            System.out.println("Error saving employee: " + e.getMessage());
+            logger.info("Error saving employee: " + e.getMessage());
             throw e;
         }
     }
@@ -63,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             return employeeRepository.findAll();
         } catch (Exception e) {
-            System.out.println("Error fetching employees: " + e.getMessage());
+            logger.info("Error fetching employees: " + e.getMessage());
             throw e;
         }
     }
@@ -78,7 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 throw new EmployeeNotFoundException("Employee not found with ID: " + id);
             }
         } catch (EmployeeNotFoundException e) {
-            System.out.println(e.getMessage());
+            logger.info(e.getMessage());
             throw e;
         }
     }
@@ -102,7 +109,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
             return managers;
         } catch (Exception e) {
-            System.out.println("Error fetching managers under HR: " + e.getMessage());
+            logger.info("Error fetching managers under HR: " + e.getMessage());
             throw e;
         }
     }
@@ -125,7 +132,7 @@ public class EmployeeServiceImpl implements EmployeeService {
            }
            return employees;
         } catch (Exception e) {
-            System.out.println("Error fetching employees under manager: " + e.getMessage());
+            logger.info("Error fetching employees under manager: " + e.getMessage());
             throw e;
         }
     }
@@ -143,6 +150,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee updateEmployee(Long id, Employee employee) {
         try {
+            validateEmployee(employee);
             Employee existing = getEmployeeById(id);
             existing.setName(employee.getName());
             existing.setEmail(employee.getEmail());
@@ -166,7 +174,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             return employeeRepository.save(existing);
         } catch (Exception e) {
-            System.out.println("Error updating employee: " + e.getMessage());
+            logger.info("Error updating employee: " + e.getMessage());
             throw e;
         }
     }
@@ -181,7 +189,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 throw new RuntimeException("Employee not found with name: " + name);
             }
         } catch (Exception e) {
-            System.out.println("Error while fetching employee by name: " + e.getMessage());
+            logger.info("Error while fetching employee by name: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -223,10 +231,43 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
             Employee emp = getEmployeeById(id);
             employeeRepository.delete(emp);
         } catch (Exception e) {
-            System.out.println("Error deleting employee: " + e.getMessage());
+            logger.info("Error deleting employee: " + e.getMessage());
             throw e;
         }
     }
 
+
+    private void validateEmployee(Employee employee) {
+        if (employee.getName() == null ||
+                !ValidationClass.NAME_PATTERN.matcher(employee.getName()).matches()) {
+            throw new IllegalArgumentException("Invalid name format");
+        }
+        if (employee.getEmail() == null ||
+                !ValidationClass.EMAIL_PATTERN.matcher(employee.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        if (employee.getDepartment() != null &&
+                !ValidationClass.DEPARTMENT_PATTERN.matcher(employee.getDepartment()).matches()) {
+            throw new IllegalArgumentException("Invalid department format");
+        }
+        if (employee.getDesignation() != null &&
+                !ValidationClass.DESIGNATION_PATTERN.matcher(employee.getDesignation()).matches()) {
+            throw new IllegalArgumentException("Invalid designation format");
+        }
+        if (employee.getSkills() != null &&
+                !ValidationClass.SKILLS_PATTERN.matcher(employee.getSkills()).matches()) {
+            throw new IllegalArgumentException("Invalid skills format");
+        }
+        if (employee.getStatus() != null &&
+                !ValidationClass.STATUS_PATTERN.matcher(employee.getStatus()).matches()) {
+            throw new IllegalArgumentException("Invalid status format (Allowed: Active, Inactive, OnHold)");
+        }
+        if (employee.getPhotoUrl() != null &&
+                !ValidationClass.PHOTO_URL_PATTERN.matcher(employee.getPhotoUrl()).matches()) {
+            throw new IllegalArgumentException("Invalid photo URL format");
+        }
+
+
+    }
 
 }

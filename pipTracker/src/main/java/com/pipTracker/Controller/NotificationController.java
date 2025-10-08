@@ -69,7 +69,12 @@ public class NotificationController {
     public ResponseEntity<?> createNotification(@RequestBody Notification notification) {
         try {
             return ResponseEntity.ok(notificationService.createNotification(notification));
-        } catch (Exception e) {
+        }
+        catch (IllegalArgumentException e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Validations Issues."+e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not saving properly.");
         }
     }

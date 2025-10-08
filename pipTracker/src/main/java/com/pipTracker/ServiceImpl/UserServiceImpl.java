@@ -1,5 +1,6 @@
 package com.pipTracker.ServiceImpl;
 
+import com.pipTracker.CommonUtil.ValidationClass;
 import com.pipTracker.Entity.Employee;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Repository.EmployeeRepository;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(User user, MultipartFile file) {
         try {
+            validateUser(user);
             Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
             if (existingUser.isPresent()) {
                 throw new RuntimeException("User already registered with email: " + user.getEmail());
@@ -61,6 +62,10 @@ public class UserServiceImpl implements UserService {
 
 
             if (file != null && !file.isEmpty()) {
+
+                if (file.getSize() > ValidationClass.MAX_FILE_SIZE) {
+                    throw new RuntimeException("File size exceeds 100MB limit.");
+                }
                 String contentType = file.getContentType();
                 if (contentType.equals("image/jpeg") ||
                         contentType.equals("image/jpg") ||
@@ -159,7 +164,7 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("User not found with name: " + name);
             }
         } catch (Exception e) {
-            System.out.println("Error while fetching user by name: " + e.getMessage());
+            logger.info("Error while fetching user by name: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -228,6 +233,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String resetPassword(String email, String newPassword, String confirmPassword) {
+
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
@@ -235,15 +242,24 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("New password and confirm password do not match!");
         }
 
+
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setOtp(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
 
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+        ValidUserPassword(newPassword);
+            userRepository.save(user);
+
+
         return "Password updated successfully!";
 
 
     }
+
 
     /* @Override
      public User uploadProfilePhoto(Long employeeId, MultipartFile file) {
@@ -266,6 +282,7 @@ public class UserServiceImpl implements UserService {
 
      }
  }*/
+
     @Override
     public User uploadProfilePhoto(Long employeeId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -276,8 +293,12 @@ public class UserServiceImpl implements UserService {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
+
             User user = userRepository.findByEmployee(employee)
                     .orElseThrow(() -> new RuntimeException("User not found for Employee ID: " + employeeId));
+            if (file.getSize() > ValidationClass.MAX_FILE_SIZE) {
+                throw new RuntimeException("File size exceeds 100MB limit.");
+            }
 
             String contentType = file.getContentType();
             if (!("image/jpeg".equals(contentType) ||
@@ -306,6 +327,73 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("No photo uploaded for user " + employeeId);
         }
 
+
         return user.getPhotoUrl();
     }
 }
+
+    private void validateUser(User user) {
+
+        if (user.getName() == null ||
+                !ValidationClass.NAME_PATTERN.matcher(user.getName()).matches()) {
+            throw new IllegalArgumentException("Invalid name format");
+        }
+
+        if (user.getEmail() == null ||
+                !ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        if (user.getDepartment() != null &&
+                !ValidationClass.DEPARTMENT_PATTERN.matcher(user.getDepartment()).matches()) {
+            throw new IllegalArgumentException("Invalid department format");
+        }
+
+        if (user.getDesignation() != null &&
+                !ValidationClass.DESIGNATION_PATTERN.matcher(user.getDesignation()).matches()) {
+            throw new IllegalArgumentException("Invalid designation format");
+        }
+
+        if (user.getSkills() != null &&
+                !ValidationClass.SKILLS_PATTERN.matcher(user.getSkills()).matches()) {
+            throw new IllegalArgumentException("Invalid skills format");
+        }
+
+        if (user.getStatus() != null &&
+                !ValidationClass.STATUS_PATTERN.matcher(user.getStatus()).matches()) {
+            throw new IllegalArgumentException("Invalid status format (Allowed: Active, Inactive, OnHold)");
+        }
+
+        if (user.getIsregistered() != null &&
+                !ValidationClass.ISREGISTERED_PATTERN.matcher(user.getIsregistered()).matches()) {
+            throw new IllegalArgumentException("Invalid registration status (Allowed: Yes, No)");
+        }
+
+
+
+        if (user.getFileType() != null &&
+                !ValidationClass.FILE_TYPE_PATTERN.matcher(user.getFileType()).matches()) {
+            throw new IllegalArgumentException("Invalid photo file type");
+        }
+
+        if (user.getOtp() != null &&
+                !ValidationClass.OTP_PATTERN.matcher(user.getOtp()).matches()) {
+            throw new IllegalArgumentException("Invalid OTP format");
+        }
+
+
+    }
+    private void ValidUserPassword(String Password) {
+
+        if (Password == null ||
+                !ValidationClass.PASSWORD_PATTERN.matcher(Password).matches()) {
+            throw new IllegalArgumentException("Invalid password format (must contain uppercase, lowercase, digit & special char)");
+        }
+
+    }
+
+
+
+
+
+} 

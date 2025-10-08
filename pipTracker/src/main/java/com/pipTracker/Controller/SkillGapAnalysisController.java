@@ -43,6 +43,10 @@ public class SkillGapAnalysisController {
         {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID Not Found with "+employeeId);
         }
+        catch (Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 
@@ -138,6 +142,8 @@ public class SkillGapAnalysisController {
         catch (SkillGapAnalysisNotfoundException e)
         {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("SkillGap not found with ID: " + employeeId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

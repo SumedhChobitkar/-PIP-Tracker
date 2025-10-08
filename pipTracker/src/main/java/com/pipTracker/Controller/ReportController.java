@@ -17,12 +17,24 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/reports")
 @Tag(name = "Report APIs", description = "CRUD operations and file handling for reports")
 public class ReportController {
 
-    @Autowired
+   /* @Autowired
     private ReportService reportService;
+    @Autowired
+    private  ObjectMapper mapper; // Injected
+*/
+    private final ObjectMapper mapper;
+    private final ReportService reportService;
+
+    // ✅ Constructor injection
+    public ReportController(ObjectMapper mapper, ReportService reportService) {
+        this.mapper = mapper;
+        this.reportService = reportService;
+    }
 
     @Operation(
             summary = "Create a Report",
@@ -37,7 +49,8 @@ public class ReportController {
             @RequestParam("reportData") String reportData,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            //ObjectMapper mapper = new ObjectMapper();
+
             Report report = mapper.readValue(reportData, Report.class);
 
             Report savedReport = reportService.createReport(report, employeeId, file);
