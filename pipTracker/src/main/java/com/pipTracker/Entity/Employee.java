@@ -46,7 +46,9 @@ public class Employee {
     private Long adminId;
     private String photoUrl;
     private LocalDate joiningDate;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
 
     @Enumerated(EnumType.STRING)
     private RegistrationStatus isRegistered;

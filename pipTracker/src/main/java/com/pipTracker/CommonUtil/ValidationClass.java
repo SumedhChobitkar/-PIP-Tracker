@@ -12,7 +12,7 @@ public class ValidationClass {
     public static final Pattern SKILLS_PATTERN = Pattern.compile("^[a-zA-Z, ]+$");
     public static final Pattern KRA_PATTERN = Pattern.compile("^[a-zA-Z0-9 ,.'-]*$");
     public static final Pattern KPI_PATTERN = Pattern.compile("^[a-zA-Z0-9 ,.'-]*$");
-    public static final Pattern STATUS_PATTERN = Pattern.compile("^(Active|Inactive|OnHold)$");
+    //public static final Pattern STATUS_PATTERN = Pattern.compile("^(Active|Inactive|OnHold)$");
     public static final Pattern PHOTO_URL_PATTERN = Pattern.compile("([^\\s]+(\\.(?i)(jpg|jpeg|png|gif|bmp|webp))$)");
     public static final Pattern ID_PATTERN = Pattern.compile("^[0-9]+$");
 

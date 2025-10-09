@@ -34,8 +34,14 @@ public class User {
     private Long managerId;
 
     private LocalDate joiningDate;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    private String Isregistered;
+
     private String status;
     private String isRegistered; // <-- corrected naming
+
     @Lob
     @JsonIgnore   // prevent returning raw bytes in normal API responses
     private byte[] photoUrl;

@@ -2,6 +2,7 @@ package com.pipTracker.Config;
 
 import com.pipTracker.Entity.Employee;
 import com.pipTracker.Entity.Role;
+import com.pipTracker.Entity.Status;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.UserRepository;
@@ -30,6 +31,16 @@ public class StartupDataLoader {
                 return;
             }
 
+
+            Employee admin = new Employee();
+            admin.setName("SuperAdmin");
+            admin.setEmail(email);
+            // admin.setPassword(passwordEncoder.encode("Admin@123"));
+            admin.setDepartment("Admin");
+            admin.setRole(Role.ADMIN);
+            admin.setJoiningDate(LocalDate.now());
+            admin.setStatus(Status.ACTIVE);
+
             // --- Create Employee ---
             Employee admin = Employee.builder()
                     .name("SuperAdmin")
@@ -39,6 +50,7 @@ public class StartupDataLoader {
                     .joiningDate(LocalDate.now())
                     .status("Active")
                     .build();
+
 
             Employee savedManager = employeeRepository.save(admin);
 
