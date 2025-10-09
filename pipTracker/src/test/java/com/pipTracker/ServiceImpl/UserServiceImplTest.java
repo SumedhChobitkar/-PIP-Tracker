@@ -199,6 +199,7 @@ class UserServiceImplTest {
 
         assertTrue(exception.getMessage().contains("Employee not found"));
     }
+
     @Test
     void testLoginUser_UserNotFound() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
@@ -229,6 +230,7 @@ void testUpdatePassword_UserNotFound() {
 
         assertFalse(exception.getMessage().contains("User not found"));
     }
+
     @Test
     void testResetPassword_PasswordMismatch() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -239,6 +241,7 @@ void testUpdatePassword_UserNotFound() {
 
         assertEquals("New password and confirm password do not match!", exception.getMessage());
     }
+
     @Test
     void testVerifyOtp_UserNotFound() {
         when(userRepository.findByEmail("wrong@test.com")).thenReturn(Optional.empty());

@@ -35,7 +35,8 @@ public class User {
     private Long managerId;
 
     private LocalDate joiningDate;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private String Isregistered;
     @Lob
     private byte[] photoUrl;

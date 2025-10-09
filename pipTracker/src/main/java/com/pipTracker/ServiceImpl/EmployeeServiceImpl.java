@@ -2,6 +2,7 @@ package com.pipTracker.ServiceImpl;
 
 import com.pipTracker.CommonUtil.ValidationClass;
 import com.pipTracker.Entity.RegistrationStatus;
+import com.pipTracker.Entity.Status;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Repository.UserRepository;
@@ -34,6 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             validateEmployee(employee);
             employee.setManagerId(managerId);
+            employee.setStatus(Status.ACTIVE);
             return employeeRepository.save(employee);
         } catch (Exception e) {
             logger.error("Error saving employee: {}", e.getMessage(), e);
@@ -47,6 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             validateEmployee(employees);
             employees.setHrId(hrId);
+            employees.setStatus(Status.ACTIVE);
             return employeeRepository.save(employees);
         } catch (Exception e) {
             logger.error("Error saving employee: {} " , e.getMessage());
@@ -58,6 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee saveHr(Employee employees) {
         try {
             validateEmployee(employees);
+            employees.setStatus(Status.ACTIVE);
             return employeeRepository.save(employees);
         } catch (Exception e) {
             logger.info("Error saving employee: " + e.getMessage());
@@ -90,15 +94,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-   /* @Override
-    public List<Employee> getManagersUnderHR(Long hrId) {
-        try {
-            return employeeRepository.findByManagerId(hrId);
-        } catch (Exception e) {
-            System.out.println("Error fetching managers under HR: " + e.getMessage());
-            throw e;
-        }
-    }*/
 
     @Override
     public List<Employee> getManagersUnderHR(Long hrId) {
@@ -114,15 +109,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    /*@Override
-    public List<Employee> getEmployeesUnderManager(Long managerId) {
-        try {
-            return employeeRepository.findByManagerId(managerId);
-        } catch (Exception e) {
-            System.out.println("Error fetching employees under manager: " + e.getMessage());
-            throw e;
-        }
-    }*/
 
     public List<Employee> getEmployeesUnderManager(Long managerId) {
         try {
@@ -207,17 +193,14 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
         }
 }
 
+
     @Override
-    public Employee updateRegistrationStatus(Long employeeId, boolean status) {
+    public Employee updateStatus(Long employeeId, Employee employee) {
         try {
             Employee emp = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+            emp.setStatus(employee.getStatus());
 
-            if (status) {
-                emp.setIsRegistered(RegistrationStatus.REGISTERED);
-            } else {
-                emp.setIsRegistered(RegistrationStatus.NOT_REGISTERED);
-            }
 
             return employeeRepository.save(emp);
         } catch (Exception e) {
@@ -225,7 +208,10 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
         }
     }
 
-@Override
+
+
+
+    @Override
     public void deleteEmployee(Long id) {
         try {
             Employee emp = getEmployeeById(id);
@@ -258,10 +244,7 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
                 !ValidationClass.SKILLS_PATTERN.matcher(employee.getSkills()).matches()) {
             throw new IllegalArgumentException("Invalid skills format");
         }
-        if (employee.getStatus() != null &&
-                !ValidationClass.STATUS_PATTERN.matcher(employee.getStatus()).matches()) {
-            throw new IllegalArgumentException("Invalid status format (Allowed: Active, Inactive, OnHold)");
-        }
+
         if (employee.getPhotoUrl() != null &&
                 !ValidationClass.PHOTO_URL_PATTERN.matcher(employee.getPhotoUrl()).matches()) {
             throw new IllegalArgumentException("Invalid photo URL format");

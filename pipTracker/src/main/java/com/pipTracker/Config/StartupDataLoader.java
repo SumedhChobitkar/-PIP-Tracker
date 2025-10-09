@@ -3,6 +3,7 @@ package com.pipTracker.Config;
 
 import com.pipTracker.Entity.Employee;
 import com.pipTracker.Entity.Role;
+import com.pipTracker.Entity.Status;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.UserRepository;
@@ -38,7 +39,7 @@ public class StartupDataLoader {
             admin.setDepartment("Admin");
             admin.setRole(Role.ADMIN);
             admin.setJoiningDate(LocalDate.now());
-            admin.setStatus("Active");
+            admin.setStatus(Status.ACTIVE);
 
             Employee savedManager = employeeRepository.save(admin);
 
