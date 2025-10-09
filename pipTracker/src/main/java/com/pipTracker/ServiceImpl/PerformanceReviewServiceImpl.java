@@ -1,5 +1,6 @@
 /*package com.pipTracker.ServiceImpl;
 
+import com.pipTracker.CommonUtil.Validation;
 import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Exception.PerformanceReviewNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,89 +38,40 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
     // === Save Review with reviewer auto-set from logged-in user ===
     @Override
     public PerformanceReview saveWithReviewerAuto(PerformanceReview review) {
-        try {
-            // 1. Get logged-in user email
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Validation.validatePerformanceReview(review, false);
 
-            // 2. Get User and Employee
-            var user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
-            Employee reviewer = employeeRepository.findById(user.getEmployee().getEmployeeId())
-                    .orElseThrow(() -> new EmployeeNotFoundException("Reviewer Employee not found"));
+        Employee reviewer = getLoggedInEmployee();
 
-            // 3. Set reviewer
-            review.setReviewer(reviewer);
+        review.setReviewer(reviewer);
+        if (review.getOverallRating() == null) review.setOverallRating(0.0);
 
-            if (review.getOverallRating() == null) review.setOverallRating(0.0);
+        PerformanceReview saved = repository.save(review);
+        log.info("Saved PerformanceReview with ID: {}", saved.getReviewId());
 
-            PerformanceReview saved = repository.save(review);
-            log.info("Saved PerformanceReview with ID: {}", saved.getReviewId());
+        createAuditLog(saved, reviewer);
+        sendNotification(saved);
+        sendEmail(saved, reviewer);
 
-            // === Audit Log ===
-            AuditLog audit = new AuditLog();
-            audit.setUserId(saved.getEmployee().getEmployeeId());
-            audit.setEntityname(EntityName.REVIEW);
-            audit.setEntityId(saved.getReviewId());
-            audit.setAction(Action.CREATE);
-            audit.setTimestamp(LocalDateTime.now());
-            audit.setRemarks("Review created by logged-in user " + reviewer.getEmployeeId());
-            auditLogService.createAuditLogPerformanceReview(audit);
-
-            // === Notification ===
-            Notification notification = new Notification();
-            notification.setUserId(saved.getEmployee().getEmployeeId());
-            notification.setTitle("Review Submitted");
-            notification.setMessage("A new review has been submitted for you.");
-            notification.setType("ALERT");
-            notification.setTimestamp(LocalDateTime.now());
-            notificationService.createNotification(notification);
-
-            // === Email to Reviewer ===
-            String toEmail = reviewer.getEmail();
-            if (toEmail != null) {
-                String subject = "New Review Notification";
-                String body = "Dear " + reviewer.getName() + ",\n\n" +
-                        "You have submitted a new review for " + saved.getEmployee().getName() + ".\n" +
-                        "Please check it in the system.\n\nBest Regards,\nHR Team\n\n(This is an auto-generated mail)";
-                emailSenderService.sendEmail(toEmail, subject, body);
-            }
-
-            return saved;
-        } catch (Exception e) {
-            log.error("Error while saving PerformanceReview: {}", e.getMessage(), e);
-            throw e;
-        }
+        return saved;
     }
 
     @Override
     public PerformanceReview save(PerformanceReview review) {
+        Validation.validatePerformanceReview(review, false);
         if (review.getOverallRating() == null) review.setOverallRating(0.0);
         return repository.save(review);
     }
 
     @Override
     public PerformanceReview saveWithReviewer(PerformanceReview review, Long reviewerId) {
-        return null; // Deprecated: now using saveWithReviewerAuto
+        return null;
     }
 
     @Override
     @Transactional(readOnly = true)
     public PerformanceReview getById(Long id) {
-        PerformanceReview review = repository.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new PerformanceReviewNotFoundException("Review not found with id: " + id));
-
-        // Auto-set reviewer if null
-        if (review.getReviewer() == null) {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            var user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
-            Employee reviewer = employeeRepository.findById(user.getEmployee().getEmployeeId())
-                    .orElseThrow(() -> new EmployeeNotFoundException("Reviewer Employee not found"));
-            review.setReviewer(reviewer);
-            repository.save(review);
-        }
-
-        return review;
     }
 
     @Override
@@ -129,6 +82,8 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
 
     @Override
     public PerformanceReview update(Long id, PerformanceReview incoming) {
+        Validation.validatePerformanceReview(incoming, true);
+
         PerformanceReview existing = getById(id);
         existing.setReviewPeriod(incoming.getReviewPeriod());
         existing.setReviewDate(incoming.getReviewDate());
@@ -139,6 +94,7 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
         existing.setFileName(incoming.getFileName());
         existing.setFileType(incoming.getFileType());
         existing.setFileData(incoming.getFileData());
+
         return repository.save(existing);
     }
 
@@ -169,6 +125,9 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
             review.setFileName(file.getOriginalFilename());
             review.setFileType(file.getContentType());
             review.setFileData(file.getBytes());
+
+            Validation.validatePerformanceReview(review, true);
+
             return repository.save(review);
         } catch (Exception e) {
             throw new RuntimeException("Error uploading file", e);
@@ -182,6 +141,52 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
             throw new RuntimeException("No file uploaded for this review");
         }
         return review.getFileData();
+    }
+
+    @Override
+    public PerformanceReview saveWithReviewerAuto(PerformanceReview review, Long employeeId) {
+        return null;
+    }
+
+    // === Helper Methods ===
+    private Employee getLoggedInEmployee() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
+        return employeeRepository.findById(user.getEmployee().getEmployeeId())
+                .orElseThrow(() -> new EmployeeNotFoundException("Reviewer Employee not found"));
+    }
+
+    private void createAuditLog(PerformanceReview review, Employee reviewer) {
+        AuditLog audit = new AuditLog();
+        audit.setUserId(review.getEmployee().getEmployeeId());
+        audit.setEntityname(EntityName.REVIEW);
+        audit.setEntityId(review.getReviewId());
+        audit.setAction(Action.CREATE);
+        audit.setTimestamp(LocalDateTime.now());
+        audit.setRemarks("Review created by logged-in user " + reviewer.getEmployeeId());
+        auditLogService.createAuditLogPerformanceReview(audit);
+    }
+
+    private void sendNotification(PerformanceReview review) {
+        Notification notification = new Notification();
+        notification.setUserId(review.getEmployee().getEmployeeId());
+        notification.setTitle("Review Submitted");
+        notification.setMessage("A new review has been submitted for you.");
+        notification.setType("ALERT");
+        notification.setTimestamp(LocalDateTime.now());
+        notificationService.createNotification(notification);
+    }
+
+    private void sendEmail(PerformanceReview review, Employee reviewer) {
+        String toEmail = reviewer.getEmail();
+        if (toEmail != null) {
+            String subject = "New Review Notification";
+            String body = "Dear " + reviewer.getName() + ",\n\n" +
+                    "You have submitted a new review for " + review.getEmployee().getName() + ".\n" +
+                    "Please check it in the system.\n\nBest Regards,\nHR Team\n\n(This is an auto-generated mail)";
+            emailSenderService.sendEmail(toEmail, subject, body);
+        }
     }
 }
  */

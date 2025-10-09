@@ -243,6 +243,13 @@ public class UserServiceImpl implements UserService {
         }
 
 
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+        ValidUserPassword(newPassword);
+            userRepository.save(user);
+
+
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setOtp(null);
         user.setOtpExpiry(null);
@@ -259,6 +266,7 @@ public class UserServiceImpl implements UserService {
 
 
     }
+
 
 
     /* @Override
@@ -283,6 +291,7 @@ public class UserServiceImpl implements UserService {
      }
  }*/
 
+
     @Override
     public User uploadProfilePhoto(Long employeeId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -300,12 +309,14 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("File size exceeds 100MB limit.");
             }
 
+
             String contentType = file.getContentType();
             if (!("image/jpeg".equals(contentType) ||
                     "image/jpg".equals(contentType) ||
                     "image/png".equals(contentType))) {
                 throw new RuntimeException("Invalid file format. Only JPEG, JPG, PNG allowed.");
             }
+
 
             user.setPhotoUrl(file.getBytes());
             user.setFileType(contentType);
@@ -344,6 +355,20 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid email format");
         }
 
+
+    private void validateUser(User user) {
+
+        if (user.getName() == null ||
+                !ValidationClass.NAME_PATTERN.matcher(user.getName()).matches()) {
+            throw new IllegalArgumentException("Invalid name format");
+        }
+
+        if (user.getEmail() == null ||
+                !ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+
         if (user.getDepartment() != null &&
                 !ValidationClass.DEPARTMENT_PATTERN.matcher(user.getDepartment()).matches()) {
             throw new IllegalArgumentException("Invalid department format");
@@ -363,6 +388,41 @@ public class UserServiceImpl implements UserService {
                 !ValidationClass.STATUS_PATTERN.matcher(user.getStatus()).matches()) {
             throw new IllegalArgumentException("Invalid status format (Allowed: Active, Inactive, OnHold)");
         }
+
+
+        if (user.getIsregistered() != null &&
+                !ValidationClass.ISREGISTERED_PATTERN.matcher(user.getIsregistered()).matches()) {
+            throw new IllegalArgumentException("Invalid registration status (Allowed: Yes, No)");
+        }
+
+
+
+        if (user.getFileType() != null &&
+                !ValidationClass.FILE_TYPE_PATTERN.matcher(user.getFileType()).matches()) {
+            throw new IllegalArgumentException("Invalid photo file type");
+        }
+
+        if (user.getOtp() != null &&
+                !ValidationClass.OTP_PATTERN.matcher(user.getOtp()).matches()) {
+            throw new IllegalArgumentException("Invalid OTP format");
+        }
+
+
+    }
+    private void ValidUserPassword(String Password) {
+
+        if (Password == null ||
+                !ValidationClass.PASSWORD_PATTERN.matcher(Password).matches()) {
+            throw new IllegalArgumentException("Invalid password format (must contain uppercase, lowercase, digit & special char)");
+        }
+
+    }
+
+
+
+
+
+
 
         if (user.getIsregistered() != null &&
                 !ValidationClass.ISREGISTERED_PATTERN.matcher(user.getIsregistered()).matches()) {

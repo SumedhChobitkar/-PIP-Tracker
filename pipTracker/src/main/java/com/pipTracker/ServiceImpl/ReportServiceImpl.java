@@ -232,6 +232,21 @@ public class ReportServiceImpl implements ReportService {
             throw new IllegalArgumentException("Invalid createdBy ID");
         }
 
+
+        if (report.getEmployee() == null || report.getEmployee().getEmployeeId() == null ||
+                !ValidationClass.ID_PATTERN.matcher(report.getEmployee().getEmployeeId().toString()).matches()) {
+            throw new IllegalArgumentException("Invalid employee ID");
+        }
+
+        if (report.getFileType() != null &&
+                !ValidationClass.FILE_TYPE_PATTERN.matcher(report.getFileType()).matches()) {
+            throw new IllegalArgumentException("Invalid file type");
+        }
+
+        if (report.getGeneratedOn() == null) {
+            throw new IllegalArgumentException("generatedOn cannot be null");
+
+
         if (report.getEmployee() == null || report.getEmployee().getEmployeeId() == null ||
                 !ValidationClass.ID_PATTERN.matcher(report.getEmployee().getEmployeeId().toString()).matches()) {
             throw new IllegalArgumentException("Invalid employee ID");
@@ -374,6 +389,7 @@ public class ReportServiceImpl implements ReportService {
             throw ex;
         } catch (Exception e) {
             throw new RuntimeException("Error while fetching reports for employeeId: " + employeeId, e);
+
         }
     }
 
@@ -408,11 +424,18 @@ public class ReportServiceImpl implements ReportService {
         throw new RuntimeException("Image not found for given employee!");
     }
 
+
+}
+
+
+
+
     // Get report image by reportId (for /api/reports/image/{id})
     @Override
     public byte[] getReportImage(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found with ID: " + reportId));
+
 
         if (report.getFile() == null) {
             throw new RuntimeException("No image found for this report");

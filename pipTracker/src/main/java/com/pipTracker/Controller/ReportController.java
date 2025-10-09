@@ -18,12 +18,24 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/reports")
 @Tag(name = "Report APIs", description = "CRUD operations and file handling for reports")
 public class ReportController {
 
-    @Autowired
+   /* @Autowired
     private ReportService reportService;
+    @Autowired
+    private  ObjectMapper mapper; // Injected
+*/
+    private final ObjectMapper mapper;
+    private final ReportService reportService;
+
+    // ✅ Constructor injection
+    public ReportController(ObjectMapper mapper, ReportService reportService) {
+        this.mapper = mapper;
+        this.reportService = reportService;
+    }
 
     // Create a new report (with file upload)
     @Operation(

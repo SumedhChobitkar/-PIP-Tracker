@@ -78,4 +78,6 @@ public class Employee {
     @JsonIgnore
     private List<PerformanceReview> reviewsGiven;
 
+    public Employee(long l, String johnDoe) {
+    }
 }
