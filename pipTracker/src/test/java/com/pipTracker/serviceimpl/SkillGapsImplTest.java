@@ -1,4 +1,4 @@
-package com.pipTracker.serviceimpl;
+package com.pipTracker.ServiceImpl;
 
 import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.SkillGapAnalysisNotfoundException;

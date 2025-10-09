@@ -1,12 +1,8 @@
 package com.pipTracker.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -14,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder  // <-- Add this for builder support
 public class User {
 
     @Id
@@ -25,8 +22,10 @@ public class User {
     private String password;
     private boolean recentlyChangedPassword = false;
     private LocalDateTime lastPasswordChangedAt;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
     private String department;
     private String designation;
     private String skills;
@@ -36,7 +35,7 @@ public class User {
 
     private LocalDate joiningDate;
     private String status;
-    private String Isregistered;
+    private String isRegistered; // <-- corrected naming
     @Lob
     private byte[] photoUrl;
     private String fileType;
@@ -46,9 +45,12 @@ public class User {
 
     private LocalDateTime lastLoginTime;
 
-
     @OneToOne
     @JoinColumn(name = "employee_id")
     @JsonIgnoreProperties("user")
     private Employee employee;
+
+    public CharSequence getIsregistered() {
+        return null;
+    }
 }
