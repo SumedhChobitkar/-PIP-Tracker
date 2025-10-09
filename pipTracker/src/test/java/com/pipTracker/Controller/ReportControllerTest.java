@@ -64,7 +64,11 @@ public class ReportControllerTest {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
+
         reportController = new ReportController(mapper, reportService); // ✅ manual injection
+
+        reportController = new ReportController(mapper, reportService); // manual injection
+
         mockMvc = MockMvcBuilders.standaloneSetup(reportController).build();
 
         report = new Report(

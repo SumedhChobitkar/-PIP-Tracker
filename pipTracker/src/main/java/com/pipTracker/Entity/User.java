@@ -1,5 +1,5 @@
 package com.pipTracker.Entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,8 +37,10 @@ public class User {
     private String status;
     private String isRegistered; // <-- corrected naming
     @Lob
+    @JsonIgnore   // prevent returning raw bytes in normal API responses
     private byte[] photoUrl;
     private String fileType;
+    private Long fileSize;   // optional but useful
 
     private String otp;
     private LocalDateTime otpExpiry;
