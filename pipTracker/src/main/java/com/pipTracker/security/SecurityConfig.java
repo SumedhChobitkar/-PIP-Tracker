@@ -88,7 +88,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/feedback/add/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.PUT,"/api/feedback/update/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/feedback/get/{employeeId}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/feedback/getall").hasAnyRole("HR","MANAGER","ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/feedback/getAll").hasAnyRole("HR","MANAGER","ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}/{feedbackId}").hasAnyRole("HR","MANAGER")
                         //pip related
