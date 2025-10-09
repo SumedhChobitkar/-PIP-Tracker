@@ -1,7 +1,6 @@
 package com.pipTracker.Service;
 
 import com.pipTracker.Entity.SkillGapAnalysis;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

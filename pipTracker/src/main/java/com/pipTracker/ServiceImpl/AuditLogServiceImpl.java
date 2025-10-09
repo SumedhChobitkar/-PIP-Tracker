@@ -7,7 +7,6 @@ import com.pipTracker.Exception.AuditLogNotFoundException;
 import com.pipTracker.Repository.AuditLogArchieveRepository;
 import com.pipTracker.Repository.AuditLogRepository;
 import com.pipTracker.Service.AuditLogService;
-import com.pipTracker.Validations.Validation;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

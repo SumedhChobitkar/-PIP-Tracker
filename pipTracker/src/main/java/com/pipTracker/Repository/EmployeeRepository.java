@@ -2,7 +2,6 @@ package com.pipTracker.Repository;
 
 import com.pipTracker.Entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.pipTracker.Entity.Role;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,5 +1,4 @@
 package com.pipTracker.Entity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 public class AuditLog
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long logId;
     private Long userId;
 

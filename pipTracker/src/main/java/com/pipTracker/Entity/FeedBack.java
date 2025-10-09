@@ -3,7 +3,6 @@ package com.pipTracker.Entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
