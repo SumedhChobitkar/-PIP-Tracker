@@ -1,4 +1,4 @@
-package com.pipTracker.controller;
+package com.pipTracker.Controller;
 
 import com.pipTracker.Controller.FeedBackController;
 import com.pipTracker.Entity.FeedBack;

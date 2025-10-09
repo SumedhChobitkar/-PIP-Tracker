@@ -1,4 +1,4 @@
-package com.pipTracker.controller;
+package com.pipTracker.Controller;
 
 import com.pipTracker.Controller.AuditLogArchieveController;
 import com.pipTracker.Entity.AuditLogArchieve;

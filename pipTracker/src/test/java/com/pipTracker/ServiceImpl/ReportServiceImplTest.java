@@ -85,7 +85,7 @@ public class ReportServiceImplTest {
     void testGetReportById_NotFound() {
         when(reportRepository.findById(101L)).thenReturn(Optional.empty());
 
-       // assertThrows(ReportNotFoundException.class, () -> reportService.getReportById(101L));
+        // assertThrows(ReportNotFoundException.class, () -> reportService.getReportById(101L));
         assertThrows(RuntimeException.class, () -> reportService.getReportById(101L));
 
     }
@@ -101,7 +101,7 @@ public class ReportServiceImplTest {
 
     @Test
     void testGetEmployeeImage() {
-        mockReport.setFile("image".getBytes());
+        mockReport.setFileData("image".getBytes());
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(reportRepository.findByEmployee_EmployeeId(1L)).thenReturn(Collections.singletonList(mockReport));
 
@@ -132,7 +132,7 @@ public class ReportServiceImplTest {
         when(reportRepository.save(any(Report.class))).thenReturn(mockReport);
 
         Report result = reportService.updateReportImage(100L, file);
-        assertNotNull(result.getFile());
+        assertNotNull(result.getFileData());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class ReportServiceImplTest {
         when(reportRepository.save(any(Report.class))).thenReturn(mockReport);
 
         Report result = reportService.updateImageByEmployeeId(1L, file);
-        assertNotNull(result.getFile());
+        assertNotNull(result.getFileData());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class ReportServiceImplTest {
 
     @Test
     void testGetEmployeeImage_EmployeeIdAndNameMismatch() {
-        mockReport.setFile("image".getBytes());
+        mockReport.setFileData("image".getBytes());
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(reportRepository.findByEmployee_EmployeeId(1L)).thenReturn(Collections.singletonList(mockReport));
 
