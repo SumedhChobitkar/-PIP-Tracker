@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
                     }
                     return u;
                 } else {
-                    throw new RuntimeException("Invalid Password");
+                    throw new RuntimeException("Invalid Password,Please Enter valid password");
                 }
             } else {
                 throw new RuntimeException("User not found");
