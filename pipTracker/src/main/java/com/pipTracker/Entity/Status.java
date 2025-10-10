@@ -6,5 +6,5 @@ package com.pipTracker.Entity;
      FAILED,
      INACTIVE
 
-
+     //private Status status;
  }

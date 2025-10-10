@@ -69,11 +69,11 @@ public class FeedBackController {
     @Operation(
             summary = "Get All Feedback",
             description = "Fetches all feedback entries.\n\n" +
-                    "Eg: GET http://localhost:8080/api/feedback/getall"
+                    "Eg: GET http://localhost:8080/api/feedback/getAll"
     )
     @ApiResponse(responseCode = "200", description = "Feedback fetched successfully")
     @ApiResponse(responseCode = "500", description = "Error fetching feedback")
-    @GetMapping("/getall")
+    @GetMapping("/getAll")
     public ResponseEntity<?> getAllFeedback() {
         try {
             List<FeedBack> getfb = feedbackservice.getAllFeedback();
