@@ -30,8 +30,6 @@ public class StartupDataLoader {
                 System.out.println("SuperAdmin already exists.");
                 return;
             }
-
-
             Employee admin = new Employee();
             admin.setName("SuperAdmin");
             admin.setEmail(email);
@@ -41,15 +39,6 @@ public class StartupDataLoader {
             admin.setJoiningDate(LocalDate.now());
             admin.setStatus(Status.ACTIVE);
 
-            // --- Create Employee ---
-            Employee admin = Employee.builder()
-                    .name("SuperAdmin")
-                    .email(email)
-                    .department("Admin")
-                    .role(Role.ADMIN)
-                    .joiningDate(LocalDate.now())
-                    .status("Active")
-                    .build();
 
 
             Employee savedManager = employeeRepository.save(admin);
@@ -60,7 +49,7 @@ public class StartupDataLoader {
                     .password(passwordEncoder.encode("Admin@123"))
                     .role(Role.ADMIN)
                     .employee(savedManager)
-                    .isRegistered("TRUE")  // <-- correct setter
+                    .Isregistered("True")
                     .build();
 
             userRepository.save(user);

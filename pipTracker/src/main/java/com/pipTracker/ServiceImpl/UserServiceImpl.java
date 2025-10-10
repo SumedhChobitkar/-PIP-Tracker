@@ -1,3 +1,7 @@
+
+
+
+
 package com.pipTracker.ServiceImpl;
 
 import com.pipTracker.CommonUtil.ValidationClass;
@@ -120,56 +124,103 @@ public class UserServiceImpl implements UserService {
 
 
 
-    @Override
-    public User loginUser(String email, String password) {
-        try {
-            Optional<User> user = userRepository.findByEmail(email);
-            if (user.isPresent()) {
+//    @Override
+//    public User loginUser(String email, String password) {
+//        try {
+//            Optional<User> user = userRepository.findByEmail(email);
+//            if (user.isPresent()) {
+//
+//                User u = user.get();
+//                Employee empl = u.getEmployee();
+//                if (empl != null && empl.getStatus() == Status.INACTIVE) {
+//                    throw new RuntimeException("Your account is inactive. Please contact admin.");
+//                }
+//
+//                // Check password
+//                if (passwordEncoder.matches(password, u.getPassword())) {
+//
+//                    // Use passwordEncoder.matches to compare raw password with encoded password
+//                    if (passwordEncoder.matches(password, user.get().getPassword())) {
+//
+//                        if (email != null) {
+//                            Optional<Employee> opt = employeeRepository.findByEmail(email);
+//                            if (opt.isPresent()) {
+//                                Employee emp = opt.get();
+//                                String toEmail = email;
+//                                String subject = "No Reply";
+//
+//                                String body = "Dear " + emp.getName() + "," + "\n\nI hope this message finds you well. " +
+//                                        "\nYou have logged in on " + LocalDateTime.now() + "." +
+//                                        "\nIf you have any related queries, feel free to reach out to us." + "\n\n"
+//                                        + "Best Regards," + "\n" + "HR Team." + "\n\n\nThis is an auto-generated mail.";
+//
+//
+//
+//                                emailSenderService.sendEmail(toEmail, subject, body);
+//                            }
+//                        }
+//                        return u;
+//                    } else {
+//                        throw new RuntimeException("Invalid Password,Please Enter valid password");
+//                    }
+//                } else {
+//                    throw new RuntimeException("User not found");
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.info("Error during login: " + e.getMessage());
+//            throw e;
+//        }
+//    }
+//
+@Override
+public User loginUser(String email, String password) {
+    try {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
 
-                User u = user.get();
-                Employee empl = u.getEmployee();
-                if (empl != null && empl.getStatus() == Status.INACTIVE) {
-                    throw new RuntimeException("Your account is inactive. Please contact admin.");
-                }
+            User u = user.get();
+            Employee empl = u.getEmployee();
 
-                // Check password
-                if (passwordEncoder.matches(password, u.getPassword())) {
-
-                // Use passwordEncoder.matches to compare raw password with encoded password
-                if (passwordEncoder.matches(password, user.get().getPassword())) {
-
-                    if (email != null) {
-                        Optional<Employee> opt = employeeRepository.findByEmail(email);
-                        if (opt.isPresent()) {
-                            Employee emp = opt.get();
-                            String toEmail = email;
-                            String subject = "No Reply";
-
-                            String body = "Dear " + emp.getName() + "," + "\n\nI hope this message finds you well. " +
-                                    "\nYou have logged in on " + LocalDateTime.now() + "." +
-                                    "\nIf you have any related queries, feel free to reach out to us." + "\n\n"
-                                    + "Best Regards," + "\n" + "HR Team." + "\n\n\nThis is an auto-generated mail.";
-
-                            String body = "Dear " + emp.getName() + "," + "\n\nI hope this message finds you a well. " +
-                                    "\nYou have Logged in on " + LocalDateTime.now() + "." + "\nIf you have any related queries feel free to reach out us." + "\n\n"
-                                    + "Best Regards," + "\n" + "HR Team." + "\n\n\nThis is auto-generated mail.";
-
-
-                            emailSenderService.sendEmail(toEmail, subject, body);
-                        }
-                    }
-                    return u;
-                } else {
-                    throw new RuntimeException("Invalid Password,Please Enter valid password");
-                }
-            } else {
-                throw new RuntimeException("User not found");
+            // Check if employee is inactive
+            if (empl != null && empl.getStatus() == Status.INACTIVE) {
+                throw new RuntimeException("Your account is inactive. Please contact admin.");
             }
-        } catch (Exception e) {
-            logger.info("Error during login: " + e.getMessage());
-            throw e;
+
+            // Check password
+            if (passwordEncoder.matches(password, u.getPassword())) {
+
+                // Send email notification
+                if (email != null) {
+                    Optional<Employee> opt = employeeRepository.findByEmail(email);
+                    if (opt.isPresent()) {
+                        Employee emp = opt.get();
+                        String toEmail = email;
+                        String subject = "No Reply";
+
+                        String body = "Dear " + emp.getName() + "," + "\n\nI hope this message finds you well. " +
+                                "\nYou have logged in on " + LocalDateTime.now() + "." +
+                                "\nIf you have any related queries, feel free to reach out to us." + "\n\n"
+                                + "Best Regards," + "\n" + "HR Team." + "\n\n\nThis is an auto-generated mail.";
+
+                        emailSenderService.sendEmail(toEmail, subject, body);
+                    }
+                }
+
+                return u;
+            } else {
+                throw new RuntimeException("Invalid Password. Please enter a valid password.");
+            }
+
+        } else {
+            throw new RuntimeException("User not found.");
         }
+
+    } catch (Exception e) {
+        logger.info("Error during login: " + e.getMessage());
+        throw e;
     }
+}
 
 
     @Override
@@ -286,15 +337,7 @@ public class UserServiceImpl implements UserService {
         user.setOtpExpiry(null);
         ValidUserPassword(newPassword);
         userRepository.save(user);
-
-
-            return "Password updated successfully!";
-
-
         return "Password updated successfully!";
-
-
-
     }
 
 
