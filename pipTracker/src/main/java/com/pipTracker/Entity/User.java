@@ -39,8 +39,8 @@ public class User {
     private Status status;
     private String Isregistered;
 
-    private String status;
-    private String isRegistered; // <-- corrected naming
+
+     // <-- corrected naming
 
     @Lob
     @JsonIgnore   // prevent returning raw bytes in normal API responses
