@@ -19,7 +19,9 @@ public interface EmployeeService {
     List<Employee> getEmployeesUnderManager(Long managerId);
     List<Employee> getEmployeesByHrId(Long hrId);
     public Employee UpdateEmployeeRole(Long id, Employee newRole);
-    Employee updateRegistrationStatus(Long employeeId, boolean status);
+//    Employee updateRegistrationStatus(Long employeeId, boolean status);
+    public Employee updateStatus(Long employeeId, Employee employee);
+
 
 
     void deleteEmployee(Long id);

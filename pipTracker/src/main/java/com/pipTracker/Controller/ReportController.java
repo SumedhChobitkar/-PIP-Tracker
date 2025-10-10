@@ -7,7 +7,6 @@ import com.pipTracker.Service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,16 @@ import java.util.List;
 @Tag(name = "Report APIs", description = "CRUD operations and file handling for reports")
 public class ReportController {
 
-    @Autowired
-    private ReportService reportService;
+    private final ObjectMapper mapper;
+    private final ReportService reportService;
 
+    //Constructor Injection (Best Practice)
+    public ReportController(ObjectMapper mapper, ReportService reportService) {
+        this.mapper = mapper;
+        this.reportService = reportService;
+    }
+
+    //Create Report
     @Operation(
             summary = "Create a Report",
             description = "Creates a new report for an employee. Supports file upload along with report details.\n\n" +
@@ -32,15 +38,13 @@ public class ReportController {
     )
     @ApiResponse(responseCode = "200", description = "Report created successfully")
     @ApiResponse(responseCode = "400", description = "Error while creating report")
-    @PostMapping("/create/{employeeId}/reports")
+    @PostMapping(value = "/create/{employeeId}/reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReport(
             @PathVariable Long employeeId,
             @RequestParam("reportData") String reportData,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             Report report = mapper.readValue(reportData, Report.class);
-
             Report savedReport = reportService.createReport(report, employeeId, file);
             return ResponseEntity.ok(savedReport);
         } catch (Exception e) {
@@ -48,13 +52,11 @@ public class ReportController {
         }
     }
 
+    //Get All Reports
     @Operation(
             summary = "Get All Reports",
-            description = "Fetches all available reports.\n\n" +
-                    "Eg: GET http://localhost:8080/api/reports"
+            description = "Fetches all available reports.\n\nEg: GET http://localhost:8080/api/reports"
     )
-    @ApiResponse(responseCode = "200", description = "Reports fetched successfully")
-    @ApiResponse(responseCode = "404", description = "No reports found")
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
@@ -68,13 +70,11 @@ public class ReportController {
         }
     }
 
+    //Get Report by ID
     @Operation(
             summary = "Get Report by ID",
-            description = "Fetches a single report by its ID.\n\n" +
-                    "Eg: GET http://localhost:8080/api/reports/{id}"
+            description = "Fetches a single report by its ID.\n\nEg: GET http://localhost:8080/api/reports/{id}"
     )
-    @ApiResponse(responseCode = "200", description = "Report fetched successfully")
-    @ApiResponse(responseCode = "404", description = "Report not found")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) {
         try {
@@ -87,13 +87,11 @@ public class ReportController {
         }
     }
 
+    //Get Reports by Employee ID
     @Operation(
             summary = "Get Reports by Employee ID",
-            description = "Fetches all reports linked to a specific employee.\n\n" +
-                    "Eg: GET http://localhost:8080/api/reports/employee/{employeeId}"
+            description = "Fetches all reports linked to a specific employee.\n\nEg: GET http://localhost:8080/api/reports/employee/{employeeId}"
     )
-    @ApiResponse(responseCode = "200", description = "Reports fetched successfully")
-    @ApiResponse(responseCode = "500", description = "Error while fetching reports")
     @GetMapping("/employee/{employeeId}")
     public ResponseEntity<?> getReportsByEmployeeId(@PathVariable Long employeeId) {
         try {
@@ -105,13 +103,11 @@ public class ReportController {
         }
     }
 
+    //Get Employee Image
     @Operation(
             summary = "Get Employee Image",
-            description = "Fetches employee image by employeeId or name.\n\n" +
-                    "Eg: GET http://localhost:8080/api/reports/get-image?employeeId=1"
+            description = "Fetches employee image by employeeId or name.\n\nEg: GET http://localhost:8080/api/reports/get-image?employeeId=1"
     )
-    @ApiResponse(responseCode = "200", description = "Image fetched successfully")
-    @ApiResponse(responseCode = "404", description = "Image not found")
     @GetMapping("/get-image")
     public ResponseEntity<?> getEmployeeImage(
             @RequestParam(required = false) Long employeeId,
@@ -129,13 +125,11 @@ public class ReportController {
         }
     }
 
+    //Update Report (Details)
     @Operation(
             summary = "Update Report",
-            description = "Updates a report's details by its ID.\n\n" +
-                    "Eg: PUT http://localhost:8080/api/reports/{id}"
+            description = "Updates a report's details by its ID.\n\nEg: PUT http://localhost:8080/api/reports/{id}"
     )
-    @ApiResponse(responseCode = "200", description = "Report updated successfully")
-    @ApiResponse(responseCode = "404", description = "Report not found")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Report updated) {
         try {
@@ -148,14 +142,12 @@ public class ReportController {
         }
     }
 
+    //Update Report Image by Report ID
     @Operation(
             summary = "Update Report Image by Report ID",
-            description = "Updates the image attached to a specific report.\n\n" +
-                    "Eg: PUT http://localhost:8080/api/reports/update-image/{reportId}"
+            description = "Updates the image attached to a specific report.\n\nEg: PUT http://localhost:8080/api/reports/update-image/{reportId}"
     )
-    @ApiResponse(responseCode = "200", description = "Image updated successfully")
-    @ApiResponse(responseCode = "404", description = "Report not found")
-    @PutMapping("/update-image/{reportId}")
+    @PutMapping(value = "/update-image/{reportId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateReportImage(
             @PathVariable Long reportId,
             @RequestParam("file") MultipartFile file) {
@@ -169,14 +161,12 @@ public class ReportController {
         }
     }
 
+    // Update Image by Employee ID
     @Operation(
             summary = "Update Image by Employee ID",
-            description = "Updates employee's image using their employeeId.\n\n" +
-                    "Eg: PUT http://localhost:8080/api/reports/update-image/employee/{employeeId}"
+            description = "Updates employee's image using their employeeId.\n\nEg: PUT http://localhost:8080/api/reports/update-image/employee/{employeeId}"
     )
-    @ApiResponse(responseCode = "200", description = "Image updated successfully")
-    @ApiResponse(responseCode = "400", description = "Error while updating image")
-    @PutMapping("/update-image/employee/{employeeId}")
+    @PutMapping(value = "/update-image/employee/{employeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImageByEmployeeId(
             @PathVariable Long employeeId,
             @RequestParam("file") MultipartFile file) {
@@ -188,13 +178,11 @@ public class ReportController {
         }
     }
 
+    //Delete Report
     @Operation(
             summary = "Delete Report",
-            description = "Deletes a report by its ID.\n\n" +
-                    "Eg: DELETE http://localhost:8080/api/reports/{reportId}"
+            description = "Deletes a report by its ID.\n\nEg: DELETE http://localhost:8080/api/reports/{reportId}"
     )
-    @ApiResponse(responseCode = "200", description = "Report deleted successfully")
-    @ApiResponse(responseCode = "404", description = "Report not found")
     @DeleteMapping("/{reportId}")
     public ResponseEntity<?> delete(@PathVariable("reportId") Long reportId) {
         try {
@@ -211,3 +199,4 @@ public class ReportController {
         }
     }
 }
+

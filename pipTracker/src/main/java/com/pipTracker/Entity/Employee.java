@@ -46,7 +46,9 @@ public class Employee {
     private Long adminId;
     private String photoUrl;
     private LocalDate joiningDate;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
 
     @Enumerated(EnumType.STRING)
     private RegistrationStatus isRegistered;
@@ -78,4 +80,6 @@ public class Employee {
     @JsonIgnore
     private List<PerformanceReview> reviewsGiven;
 
+    public Employee(long l, String johnDoe) {
+    }
 }

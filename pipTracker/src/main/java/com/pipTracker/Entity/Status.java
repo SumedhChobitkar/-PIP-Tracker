@@ -3,7 +3,8 @@ package com.pipTracker.Entity;
  public enum Status {
      ACTIVE,
      COMPLETED,
-     FAILED;
+     FAILED,
+     INACTIVE
 
-     private Status status;
+     //private Status status;
  }

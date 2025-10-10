@@ -1,6 +1,8 @@
 package com.pipTracker.Repository;
 
 import com.pipTracker.Entity.Employee;
+import com.pipTracker.Entity.Status;
+import com.pipTracker.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.pipTracker.Entity.Role;
 
@@ -12,4 +14,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByManagerId(Long managerId);
     List<Employee> findByHrId(Long hrId);
     Optional<Employee> findByEmail(String email);
+    Optional <Employee> findByStatus(Status status);
 }
