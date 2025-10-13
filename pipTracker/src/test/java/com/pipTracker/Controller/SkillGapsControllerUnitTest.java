@@ -1,5 +1,6 @@
-package com.pipTracker.Controller;
+package com.pipTracker.controller;
 
+import com.pipTracker.Controller.SkillGapAnalysisController;
 import com.pipTracker.Entity.SkillGapAnalysis;
 import com.pipTracker.Exception.SkillGapAnalysisNotfoundException;
 import com.pipTracker.Service.SkillGapAnalysisService;
