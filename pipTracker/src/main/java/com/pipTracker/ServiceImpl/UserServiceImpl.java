@@ -327,10 +327,6 @@ public User loginUser(String email, String password) {
         }
 
 
-        user.setPassword(passwordEncoder.encode(newPassword));
-        user.setOtp(null);
-        user.setOtpExpiry(null);
-        userRepository.save(user);
 
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setOtp(null);
