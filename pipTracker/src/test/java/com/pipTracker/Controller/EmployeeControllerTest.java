@@ -2,6 +2,7 @@ package com.pipTracker.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pipTracker.Entity.Employee;
+import com.pipTracker.Entity.Status;
 import com.pipTracker.Service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -165,17 +166,25 @@ public class EmployeeControllerTest {
 
     @Test
     void testUpdateRegistrationStatus() throws Exception {
+        Employee employeeRequest = new Employee();
+        employeeRequest.setStatus(Status.ACTIVE);
+
         Employee updated = new Employee();
         updated.setEmployeeId(1L);
         updated.setName("John Doe");
         updated.setEmail("john@example.com");
+        updated.setStatus(Status.ACTIVE);
 
-        when(employeeService.updateRegistrationStatus(1L, true)).thenReturn(updated);
+        when(employeeService.updateStatus(eq(1L), any(Employee.class))).thenReturn(updated);
 
-        mockMvc.perform(put("/api/employees/1/status?status=true"))
+        mockMvc.perform(put("/api/employees/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(employeeRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("John Doe"));
+                .andExpect(jsonPath("$.name").value("John Doe"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
+
 
     @Test
     void testDeleteEmployee() throws Exception {

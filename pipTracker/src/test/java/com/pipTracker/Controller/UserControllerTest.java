@@ -89,6 +89,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
+
     @Test
     void testRegister_Success() throws Exception {
         when(userService.registerUser(any(User.class), any()))
@@ -96,12 +97,28 @@ public class UserControllerTest {
 
         String userJson = objectMapper.writeValueAsString(mockUser);
 
+        // Wrap userData as MockMultipartFile
+        MockMultipartFile userDataPart = new MockMultipartFile(
+                "userData",            // part name matches @RequestPart
+                "",                    // filename can be empty
+                "application/json",    // content type
+                userJson.getBytes()
+        );
+
+        MockMultipartFile filePart = new MockMultipartFile(
+                "file",
+                "profile.png",
+                "image/png",
+                new byte[0]
+        );
+
         mockMvc.perform(multipart("/api/users/register")
-                        .file(new MockMultipartFile("file", new byte[0]))
-                        .param("userData", userJson))
+                        .file(userDataPart)
+                        .file(filePart))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("hr@gmail.com"));
     }
+
 
     @Test
     void testGetUserByEmployeeId() throws Exception {
@@ -196,15 +213,24 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.error").value("Invalid email or password"));
     }
 
+
+
     @Test
     void testRegister_InvalidJson() throws Exception {
-        String invalidJson = "{invalid: json}";
+        // Multipart file for the "userData" part (invalid JSON)
+        MockMultipartFile invalidJsonPart = new MockMultipartFile(
+                "userData",           // part name
+                "",                   // filename (can be empty)
+                "application/json",   // content type
+                "{invalid: json}".getBytes() // invalid JSON
+        );
 
         mockMvc.perform(multipart("/api/users/register")
-                        .param("userData", invalidJson))
+                        .file(invalidJsonPart))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Error")));
     }
+
 
     @Test
     void testGetUserByEmployeeId_NotFound() throws Exception {

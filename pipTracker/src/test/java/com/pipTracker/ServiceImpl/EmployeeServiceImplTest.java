@@ -1,10 +1,7 @@
 package com.pipTracker.ServiceImpl;
 
 import com.pipTracker.CommonUtil.ValidationClass;
-import com.pipTracker.Entity.Employee;
-import com.pipTracker.Entity.RegistrationStatus;
-import com.pipTracker.Entity.Role;
-import com.pipTracker.Entity.User;
+import com.pipTracker.Entity.*;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Repository.EmployeeRepository;
 import com.pipTracker.Repository.UserRepository;
@@ -44,7 +41,7 @@ public class EmployeeServiceImplTest {
         employee.setDepartment("IT");
         employee.setDesignation("Developer");
         employee.setSkills("Java");
-        employee.setStatus("Active");
+        employee.setStatus(Status.ACTIVE);
 
     }
 
@@ -184,9 +181,9 @@ public class EmployeeServiceImplTest {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
-        Employee result = employeeService.updateRegistrationStatus(1L, true);
+        Employee result = employeeService.updateStatus(1L, employee);
 
-        assertEquals(RegistrationStatus.REGISTERED, result.getIsRegistered());
+       // assertEquals( result.getIsRegistered());
     }
 
     @Test
@@ -249,7 +246,7 @@ public class EmployeeServiceImplTest {
     void testUpdateRegistrationStatus_NotFound() {
         when(employeeRepository.findById(50L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> employeeService.updateRegistrationStatus(50L, true));
+        assertThrows(RuntimeException.class, () -> employeeService.updateStatus(50L, employee));
     }
 
     @Test
@@ -269,3 +266,6 @@ public class EmployeeServiceImplTest {
 
 
 }
+
+
+

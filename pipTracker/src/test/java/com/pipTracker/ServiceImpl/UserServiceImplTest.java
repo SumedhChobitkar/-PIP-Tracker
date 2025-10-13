@@ -111,7 +111,7 @@ class UserServiceImplTest {
             userService.loginUser(user.getEmail(), "wrongPassword");
         });
 
-        assertEquals("Invalid Password", exception.getMessage());
+        assertEquals("Invalid Password. Please enter a valid password.", exception.getMessage());
     }
 
     @Test
@@ -184,7 +184,8 @@ class UserServiceImplTest {
 
         String result = userService.resetPassword(user.getEmail(), "NewPassword@123", "NewPassword@123");
         assertEquals("Password updated successfully!", result);
-        verify(userRepository).save(user);
+        //verify(userRepository).save(user);
+        verify(userRepository, times(1)).save(user);
     }
 
 
@@ -208,7 +209,7 @@ class UserServiceImplTest {
             userService.loginUser(user.getEmail(), "Password@123");
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("User not found.", exception.getMessage());
     }
 //
 @Test

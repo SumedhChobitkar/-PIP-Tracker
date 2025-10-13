@@ -658,6 +658,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
+
 @Service
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
@@ -717,14 +719,35 @@ public class ReportServiceImpl implements ReportService {
         return reportRepository.findByEmployee_EmployeeId(employeeId);
     }
 
+//    @Override
+//    public byte[] getEmployeeImage(Long employeeId, String name) {
+//        List<Report> reports = reportRepository.findByEmployee_EmployeeId(employeeId);
+//        for (Report r : reports) {
+//            if (r.getFileData() != null) return r.getFileData();
+//        }
+//        throw new RuntimeException("No image found for employee " + employeeId);
+//    }
+//@Override
+//public byte[] getEmployeeImage(Long employeeId, String name) {
+//    List<Report> reports = reportRepository.findByEmployee_EmployeeId(employeeId);
+//    for (Report r : reports) {
+//        if (r.getFileData() != null) return r.getFileData();
+//    }
+//    throw new RuntimeException("No image found for employee " + employeeId);
+//}
+
     @Override
     public byte[] getEmployeeImage(Long employeeId, String name) {
         List<Report> reports = reportRepository.findByEmployee_EmployeeId(employeeId);
         for (Report r : reports) {
+            if (!r.getEmployee().getName().equals(name)) {
+                throw new RuntimeException("EmployeeId and Name do not match");
+            }
             if (r.getFileData() != null) return r.getFileData();
         }
         throw new RuntimeException("No image found for employee " + employeeId);
     }
+
 
     @Override
     public Report updateReport(Long reportId, Report updated) {
@@ -744,6 +767,8 @@ public class ReportServiceImpl implements ReportService {
             report.setPhotoUrl(generateReportFileUrl(reportId));
             return reportRepository.save(report);
         } catch (IOException e) {
+            throw new RuntimeException("Failed to update image: " + e.getMessage());
+        }catch (ReportNotFoundException e) {
             throw new RuntimeException("Failed to update image: " + e.getMessage());
         }
     }
@@ -774,6 +799,8 @@ public class ReportServiceImpl implements ReportService {
         reportRepository.deleteById(reportId);
         return true;
     }
+
+
 
     @Override
     public String generateReportFileUrl(Long reportId) {
