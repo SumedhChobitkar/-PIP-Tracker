@@ -6,6 +6,7 @@ import com.pipTracker.Entity.Status;
 import com.pipTracker.Entity.User;
 import com.pipTracker.Exception.EmployeeNotFoundException;
 import com.pipTracker.Repository.UserRepository;
+import com.pipTracker.Service.EmailService;
 import com.pipTracker.Service.EmployeeService;
 import com.pipTracker.Entity.Employee;
 
@@ -27,8 +28,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
+
+//    @Override
+//    public Employee saveEmployee(Employee employee, Long managerId) {
+//        try {
+//            validateEmployee(employee);
+//            employee.setManagerId(managerId);
+//            employee.setStatus(Status.ACTIVE);
+//            return employeeRepository.save(employee);
+//        } catch (Exception e) {
+//            logger.error("Error saving employee: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
 
     @Override
     public Employee saveEmployee(Employee employee, Long managerId) {
@@ -36,12 +53,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             validateEmployee(employee);
             employee.setManagerId(managerId);
             employee.setStatus(Status.ACTIVE);
-            return employeeRepository.save(employee);
+
+            Employee saved = employeeRepository.save(employee);
+
+            //After Save → Send Email
+            emailService.sendEmployeeRegistrationEmail(
+                    saved.getEmail(),
+                    saved.getEmployeeId(),
+                    saved.getName()
+            );
+            return saved;
+
         } catch (Exception e) {
             logger.error("Error saving employee: {}", e.getMessage(), e);
             throw e;
         }
     }
+
 
 
     @Override
@@ -147,7 +175,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             existing.setCurrentKRA(employee.getCurrentKRA());
             existing.setKpi(employee.getKpi());
             existing.setManagerId(employee.getManagerId());
-            existing.setPhotoUrl(employee.getPhotoUrl());
+            //existing.setPhotoUrl(employee.getPhotoUrl());
+            //existing.setPhoto(employee.getPhoto());
             existing.setJoiningDate(employee.getJoiningDate());
             existing.setStatus(employee.getStatus());
 
@@ -209,8 +238,6 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
     }
 
 
-
-
     @Override
     public void deleteEmployee(Long id) {
         try {
@@ -245,10 +272,7 @@ public Employee UpdateEmployeeRole(Long id, Employee newRole){
             throw new IllegalArgumentException("Invalid skills format");
         }
 
-        if (employee.getPhotoUrl() != null &&
-                !ValidationClass.PHOTO_URL_PATTERN.matcher(employee.getPhotoUrl()).matches()) {
-            throw new IllegalArgumentException("Invalid photo URL format");
-        }
+
 
 
     }

@@ -65,18 +65,18 @@ public class SecurityConfig {
 
                         ).permitAll()
                         //employee related
-                        .requestMatchers(HttpMethod.POST,  "/api/employees/addHr").hasAnyRole("ADMIN", "HR")
-                        .requestMatchers(HttpMethod.POST,  "/api/employees/addManager/{hrId}").hasAnyRole("ADMIN", "HR","MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/api/employees/addEmployee/{managerId}").hasAnyRole("ADMIN", "HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/employees/getAll").hasAnyRole("ADMIN","HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/employees/{id}").hasAnyRole("ADMIN","HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/employees/getEmployeeByName/{name}").hasAnyRole("ADMIN","HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/employeesUnderHr/{hrId}").hasAnyRole("ADMIN","HR")
-                        .requestMatchers(HttpMethod.GET,"/api/employeesUnderManager/{managerId}").hasAnyRole("ADMIN","HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/employees/addHr").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.POST, "/api/employees/addManager/{hrId}").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/employees/addEmployee/{managerId}").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/employees/getAll").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/employees/{id}").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/employees/getEmployeeByName/{name}").hasAnyRole("ADMIN", "HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/employeesUnderHr/{hrId}").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers(HttpMethod.GET, "/api/employeesUnderManager/{managerId}").hasAnyRole("ADMIN", "HR", "MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/{id}").hasRole("HR")
-                        .requestMatchers(HttpMethod.PUT, "/api/{id}/status").hasAnyRole("Admin","HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/{id}/status").hasAnyRole("Admin", "HR")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/updateRole/{id}").hasAnyRole("ADMIN", "HR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/employees/{id}").hasAnyRole("ADMIN","HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/employees/{id}").hasAnyRole("ADMIN", "HR")
 
 
                         // User related
@@ -87,51 +87,51 @@ public class SecurityConfig {
 
 
                         //feedback related
-                        .requestMatchers(HttpMethod.POST,"/api/feedback/add/{employeeId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/feedback/update/{employeeId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/feedback/get/{employeeId}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/feedback/getAll").hasAnyRole("HR","MANAGER","ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/feedback/delete/{employeeId}/{feedbackId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/feedback/add/{employeeId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/feedback/update/{employeeId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/feedback/get/{employeeId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/feedback/getAll").hasAnyRole("HR", "MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/feedback/delete/{employeeId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/feedback/delete/{employeeId}/{feedbackId}").hasAnyRole("HR", "MANAGER")
                         //pip related
-                        .requestMatchers(HttpMethod.POST,"/api/pip/save").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/pip/update/{id}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/pip/getById/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/pip/get").hasAnyRole("HR","MANAGER","ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/pip/delete/{id}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/pip/save").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/pip/update/{id}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/pip/getById/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/pip/get").hasAnyRole("HR", "MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/pip/delete/{id}").hasAnyRole("HR", "MANAGER")
                         //Skillgaps Related
-                        .requestMatchers(HttpMethod.POST,"/api/skillgaps/add/{employeeId}").hasRole("HR")
-                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/get/{employeeId}").hasAnyRole("HR","MANAGER","EMPLOYEE")
-                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/getSkillgapsByManagerId/{managerId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/skillgaps/getSkillgapsByHrId/{hrId}").hasRole("HR")
-                        .requestMatchers(HttpMethod.PUT,"/api/skillgaps/update/{employeeId}").hasRole("HR")
-                        .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}").hasRole("HR")
-                        .requestMatchers(HttpMethod.DELETE,"/api/skillgaps/delete/{employeeId}/{analysisId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.POST, "/api/skillgaps/add/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/skillgaps/get/{employeeId}").hasAnyRole("HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/skillgaps/getSkillgapsByManagerId/{managerId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/skillgaps/getSkillgapsByHrId/{hrId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/skillgaps/update/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/skillgaps/delete/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/skillgaps/delete/{employeeId}/{analysisId}").hasRole("HR")
                         //Performance Review Related
-                        .requestMatchers(HttpMethod.POST,"/api/performance-reviews/save").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/performance-reviews/update/{id}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/performance-reviews/delete/{id}").hasRole("HR")
-                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/getById/{id}").hasAnyRole("HR","MANAGER","EMPLOYEE")
-                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/get").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/employee/{employeeId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/performance-reviews/reviewer/{reviewerId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/performance-reviews/save").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/performance-reviews/update/{id}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/performance-reviews/delete/{id}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/performance-reviews/getById/{id}").hasAnyRole("HR", "MANAGER", "EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/performance-reviews/get").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/performance-reviews/employee/{employeeId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/performance-reviews/reviewer/{reviewerId}").hasAnyRole("HR", "MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/performance-reviews/{id}/upload").hasAnyRole("HR", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/performance-reviews/{id}/download").hasAnyRole("HR", "MANAGER", "EMPLOYEE")
                         //AuditLog Related
-                        .requestMatchers(HttpMethod.GET,"/api/auditlog/get/for/all").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/auditlog/get/auditlog/by/entityid/{entityId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/auditlog/delete/by/logid/{logId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/auditlog/get/for/all").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/auditlog/get/auditlog/by/entityid/{entityId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auditlog/delete/by/logid/{logId}").hasAnyRole("HR", "MANAGER")
                         //AUDITLOG ARCHIEVE Related
-                        .requestMatchers(HttpMethod.GET,"/api/auditlogarchieve/get/by/logid/{logId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/auditlogarchieve/restore/by/logid/{logId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/auditlogarchieve/deleteall").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/auditlogarchieve/delete/by/id/{logId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/auditlogarchieve/get/by/logid/{logId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/auditlogarchieve/restore/by/logid/{logId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auditlogarchieve/deleteall").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auditlogarchieve/delete/by/id/{logId}").hasAnyRole("HR", "MANAGER")
                         //Notification Related
-                        .requestMatchers(HttpMethod.GET,"/api/notification/unread/{userId}").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/notification/{id}/read").hasAnyRole("HR","MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/notification/all/{userId}").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/notification/unread/{userId}").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/notification/{id}/read").hasAnyRole("HR", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/notification/all/{userId}").hasAnyRole("HR", "MANAGER")
                         //Email Related
-                        .requestMatchers(HttpMethod.POST,"/api/mail/save").hasAnyRole("HR","MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/mail/save").hasAnyRole("HR", "MANAGER")
                         //Report Related
                         .requestMatchers(HttpMethod.POST, "/api/reports/create/**").hasAnyRole("ADMIN", "HR")
                         .requestMatchers(HttpMethod.GET, "/api/reports/{id}").hasAnyRole("ADMIN", "HR", "MANAGER", "EMPLOYEE")
@@ -164,7 +164,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // your React app
+        //config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // your React app
+        config.addAllowedOriginPattern("*");
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
@@ -172,5 +173,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-}
+    }
 }
