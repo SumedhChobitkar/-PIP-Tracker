@@ -1,7 +1,4 @@
 
-
-
-
 package com.pipTracker.ServiceImpl;
 
 import com.pipTracker.CommonUtil.ValidationClass;
@@ -49,6 +46,82 @@ public class UserServiceImpl implements UserService {
 
 
 
+
+
+//    @Override
+//    public User registerUser(User user, MultipartFile file) {
+//        try {
+//
+//            validateUser(user);
+//
+//            Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+//            if (existingUser.isPresent()) {
+//                throw new RuntimeException("User already registered with email: " + user.getEmail());
+//            }
+//
+//            // Fetch employee
+//            Long empId = user.getEmployee().getEmployeeId();
+//            Employee employee = employeeRepository.findById(empId)
+//                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + empId));
+//
+//            // Match employee and user email
+//            if (!employee.getEmail().equals(user.getEmail())) {
+//                throw new RuntimeException("User email and Employee email do not match");
+//            }
+//
+//            // Match employee and user role
+//            if (!employee.getRole().equals(user.getRole())) {
+//                throw new RuntimeException("User Role and Employee Role do not match");
+//            }
+//
+//            //  NEW CONDITION: If admin is inactive, user cannot register
+//            if (employee.getManagerId() != null) {
+//                Optional<Employee> managerOpt = employeeRepository.findById(employee.getManagerId());
+//                if (managerOpt.isPresent()) {
+//                    Employee manager = managerOpt.get();
+//                    if (manager.getStatus() == Status.INACTIVE) {
+//                        throw new RuntimeException("User cannot register because admin/manager is inactive.");
+//                    }
+//
+//                }
+//            }
+//
+//            //  File handling
+//            if (file != null && !file.isEmpty()) {
+//                if (file.getSize() > ValidationClass.MAX_FILE_SIZE) {
+//                    throw new RuntimeException("File size exceeds 100MB limit.");
+//                }
+//
+//                String contentType = file.getContentType();
+//                if (contentType.equals("image/jpeg") ||
+//                        contentType.equals("image/jpg") ||
+//                        contentType.equals("image/png")) {
+//                    user.setPhotoUrl(file.getBytes());
+//                    user.setFileType(contentType);
+//                } else {
+//                    throw new RuntimeException("Invalid file format. Only JPEG, JPG, PNG allowed.");
+//                }
+//            }
+//
+//            // Encode password
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            user.setEmployee(employee);
+//
+//
+//            if (employee.getStatus() == Status.INACTIVE) {
+//                    throw new RuntimeException("Your profile is INACTIVE. Please contact the administrator."); }
+//
+//
+//            return userRepository.save(user);
+//
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error while registering user: " + e.getMessage());
+//        }
+//    }
+//
+//
+
     @Override
     public User registerUser(User user, MultipartFile file) {
         try {
@@ -60,34 +133,28 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("User already registered with email: " + user.getEmail());
             }
 
-            // Fetch employee
             Long empId = user.getEmployee().getEmployeeId();
             Employee employee = employeeRepository.findById(empId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + empId));
 
-            // Match employee and user email
             if (!employee.getEmail().equals(user.getEmail())) {
                 throw new RuntimeException("User email and Employee email do not match");
             }
 
-            // Match employee and user role
             if (!employee.getRole().equals(user.getRole())) {
                 throw new RuntimeException("User Role and Employee Role do not match");
             }
 
-            //  NEW CONDITION: If admin is inactive, user cannot register
             if (employee.getManagerId() != null) {
                 Optional<Employee> managerOpt = employeeRepository.findById(employee.getManagerId());
                 if (managerOpt.isPresent()) {
                     Employee manager = managerOpt.get();
-                    if (manager.getStatus() == Status.INACTIVE) {
-                        throw new RuntimeException("User cannot register because admin/manager is inactive.");
-                    }
-
+//                    if (manager.getStatus() == Status.INACTIVE) {
+//                        throw new RuntimeException("User cannot register because admin/manager is inactive.");
+//                    }
                 }
             }
 
-            //  File handling
             if (file != null && !file.isEmpty()) {
                 if (file.getSize() > ValidationClass.MAX_FILE_SIZE) {
                     throw new RuntimeException("File size exceeds 100MB limit.");
@@ -104,17 +171,27 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            // Encode password
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setEmployee(employee);
 
-
             if (employee.getStatus() == Status.INACTIVE) {
-                    throw new RuntimeException("Your profile is INACTIVE. Please contact the administrator."); }
+                throw new RuntimeException("Your profile is INACTIVE. Please contact the administrator.");
+            }
 
+            User savedUser = userRepository.save(user);
 
-            return userRepository.save(user);
+            // SEND EMAIL AFTER SUCCESSFUL REGISTRATION
+            String toEmail = savedUser.getEmail();
+            String subject = "Registration Successful";
+            String body =
+                    "Hello " + savedUser.getName() + ",\n\n" +
+                            "Your registration has been completed successfully.\n" +
+                            "You can now log in with your email.\n\n" +
+                            "Regards,\nAdmin Team";
 
+            emailSenderService.sendEmail(toEmail, subject, body);
+
+            return savedUser;
 
         } catch (Exception e) {
             throw new RuntimeException("Error while registering user: " + e.getMessage());
@@ -123,8 +200,7 @@ public class UserServiceImpl implements UserService {
 
 
 
-
-//    @Override
+    //    @Override
 //    public User loginUser(String email, String password) {
 //        try {
 //            Optional<User> user = userRepository.findByEmail(email);

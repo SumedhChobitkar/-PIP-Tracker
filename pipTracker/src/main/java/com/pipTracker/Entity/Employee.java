@@ -44,7 +44,11 @@ public class Employee {
     private Long managerId;// we need to change after completion of code
     private Long hrId;
     private Long adminId;
-    private String photoUrl;
+    //private String photoUrl;
+//    @Lob
+//    @Column(columnDefinition = "LONGBLOB")
+//    private byte[] photo;
+
     private LocalDate joiningDate;
     @Enumerated(EnumType.STRING)
     private Status status;
