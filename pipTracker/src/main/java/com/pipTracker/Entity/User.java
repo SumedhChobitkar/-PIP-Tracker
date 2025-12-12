@@ -20,30 +20,33 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private String confirmPassword;
+
     private boolean recentlyChangedPassword = false;
     private LocalDateTime lastPasswordChangedAt;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String department;
-    private String designation;
-    private String skills;
-    private String currentKRA;
-    private String kpi;
-    private Long managerId;
-
-    private LocalDate joiningDate;
-
-    @Enumerated(EnumType.STRING)
-    private Status status;
-    private String Isregistered;
+//    private String department;
+//    private String designation;
+//    private String skills;
+//    private String currentKRA;
+//    private String kpi;
+//    private Long managerId;
+//
+//    private LocalDate joiningDate;
+//
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
+//    private String Isregistered;
 
 
      // <-- corrected naming
 
     @Lob
-    @JsonIgnore   // prevent returning raw bytes in normal API responses
+    @JsonIgnore
+    // prevent returning raw bytes in normal API responses
     private byte[] photoUrl;
     private String fileType;
     private Long fileSize;   // optional but useful

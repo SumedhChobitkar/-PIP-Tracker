@@ -22,6 +22,7 @@ import java.util.List;
 )
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 @RequestMapping("/api/performance-reviews")
 public class PerformanceReviewController {
 

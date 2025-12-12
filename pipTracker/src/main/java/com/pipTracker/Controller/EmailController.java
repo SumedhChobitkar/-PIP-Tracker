@@ -22,7 +22,7 @@ public class EmailController {
     @Autowired
     private EmailSenderService emailSenderService;
 
-    @Operation(
+     @Operation(
             summary = "Send Email",
             description = "Sends an email by providing recipient address, subject, and body.\n\n" +
                     "Eg: POST http://localhost:8080/api/mail/send?to=test@gmail.com&subject=Hello&body=Welcome"

@@ -2,11 +2,13 @@ package com.pipTracker.Controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
 
 @Controller
+@CrossOrigin("*")
 public class SwaggerRedirectController {
 
     @GetMapping("/v3/portal/ess/home")

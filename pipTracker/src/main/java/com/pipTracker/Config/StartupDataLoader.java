@@ -49,7 +49,7 @@ public class StartupDataLoader {
                     .password(passwordEncoder.encode("Admin@123"))
                     .role(Role.ADMIN)
                     .employee(savedManager)
-                    .Isregistered("True")
+                 //   .Isregistered("True")
                     .build();
 
             userRepository.save(user);
