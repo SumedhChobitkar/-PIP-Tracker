@@ -24,7 +24,3 @@ public class ValidationClass {
     public static final Pattern OTP_PATTERN = Pattern.compile("^[0-9]{6}$"); // 6 digit OTP
 
 }
-
-
-
-

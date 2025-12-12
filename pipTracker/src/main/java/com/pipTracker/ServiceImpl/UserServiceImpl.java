@@ -496,20 +496,20 @@ public User loginUser(String email, String password) {
             throw new IllegalArgumentException("Invalid email format");
         }
 
-        if (user.getDepartment() != null &&
-                !ValidationClass.DEPARTMENT_PATTERN.matcher(user.getDepartment()).matches()) {
-            throw new IllegalArgumentException("Invalid department format");
-        }
-
-        if (user.getDesignation() != null &&
-                !ValidationClass.DESIGNATION_PATTERN.matcher(user.getDesignation()).matches()) {
-            throw new IllegalArgumentException("Invalid designation format");
-        }
-
-        if (user.getSkills() != null &&
-                !ValidationClass.SKILLS_PATTERN.matcher(user.getSkills()).matches()) {
-            throw new IllegalArgumentException("Invalid skills format");
-        }
+//        if (user.getDepartment() != null &&
+//                !ValidationClass.DEPARTMENT_PATTERN.matcher(user.getDepartment()).matches()) {
+//            throw new IllegalArgumentException("Invalid department format");
+//        }
+//
+//        if (user.getDesignation() != null &&
+//                !ValidationClass.DESIGNATION_PATTERN.matcher(user.getDesignation()).matches()) {
+//            throw new IllegalArgumentException("Invalid designation format");
+//        }
+//
+//        if (user.getSkills() != null &&
+//                !ValidationClass.SKILLS_PATTERN.matcher(user.getSkills()).matches()) {
+//            throw new IllegalArgumentException("Invalid skills format");
+//        }
 
 
 

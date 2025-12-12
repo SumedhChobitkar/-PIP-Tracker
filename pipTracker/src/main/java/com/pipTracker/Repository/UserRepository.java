@@ -13,8 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmployeeEmployeeId(Long employeeId);
     Optional<User> findByEmployee(Employee employee);
     Optional<User> findByName(String name);
-    User findByStatus(Status status);
-
-
+//    User findByStatus(Status status);
 
 }
