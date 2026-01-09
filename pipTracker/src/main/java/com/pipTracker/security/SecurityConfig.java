@@ -100,7 +100,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/pip/get").hasAnyRole("HR", "MANAGER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/pip/delete/{id}").hasAnyRole("HR", "MANAGER")
                         //Skillgaps Related
-                        .requestMatchers(HttpMethod.POST, "/api/skillgaps/add/{employeeId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.POST, "/api/skillgaps/add/{employeeId}").hasAnyRole("HR","MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/skillgaps/get/{employeeId}").hasAnyRole("HR", "MANAGER", "EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/skillgaps/getSkillgapsByManagerId/{managerId}").hasAnyRole("HR", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/skillgaps/getSkillgapsByHrId/{hrId}").hasRole("HR")
