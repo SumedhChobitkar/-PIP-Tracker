@@ -78,7 +78,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             validateEmployee(employees);
             employees.setHrId(hrId);
             employees.setStatus(Status.ACTIVE);
-            return employeeRepository.save(employees);
+            Employee saved= employeeRepository.save(employees);
+
+            emailService.sendEmployeeRegistrationEmail(
+                    saved.getEmail(),
+                    saved.getEmployeeId(),
+                    saved.getName()
+            );
+            return saved;
         } catch (Exception e) {
             logger.error("Error saving employee: {} " , e.getMessage());
             throw e;
@@ -90,7 +97,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             validateEmployee(employees);
             employees.setStatus(Status.ACTIVE);
-            return employeeRepository.save(employees);
+            Employee saved= employeeRepository.save(employees);
+
+            emailService.sendEmployeeRegistrationEmail(
+                    saved.getEmail(),
+                    saved.getEmployeeId(),
+                    saved.getName()
+            );
+            return saved;
         } catch (Exception e) {
             logger.info("Error saving employee: " + e.getMessage());
             throw e;
